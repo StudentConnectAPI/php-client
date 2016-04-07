@@ -1,0 +1,36 @@
+{
+    "name": "studentconnect/api-client",
+    "description": "StudentConnect API Client Library",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Adrian S.",
+            "email": "adrian@studentmoneysaver.co.uk"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.5.9",
+        "guzzlehttp/guzzle": "6.0.*",
+        "acquia/http-hmac-php": "^2.1"
+    },
+    "require-dev": {
+        "monolog/monolog": "1.9.*",
+        "vlucas/phpdotenv": "^2.2",
+        "fzaninotto/faker": "^1.5",
+        "phpunit/phpunit": "^5.2",
+        "codeception/phpbuiltinserver": "^1.2",
+        "mockery/mockery": "^0.9.4"
+    },
+    "autoload": {
+        "psr-4" : {
+          "StudentConnect\\API\\Client\\" : "src/Client"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+          "tests/"
+        ]
+    }
+}
