@@ -21,7 +21,7 @@ use StudentConnect\API\Client\Exceptions\ServiceUnavailableException;
 
 class Client{
 
-    const VERSION = '0.2.3';
+    const VERSION = '0.2.5';
 
     const GET     = 'GET';
     const POST    = 'POST';
@@ -31,6 +31,8 @@ class Client{
 
     const SUCCESS = 'success';
     const ERROR   = 'error';
+
+    const TOKEN_FIELD = '__tkn';
 
     /**
      * default client headers
@@ -113,13 +115,21 @@ class Client{
     }
 
     /**
-     * Generates full URI for a resource
+     * Generates full URI for an api resource
      * @param $resource
      *
      * @return mixed
      */
-    protected function uri($resource){
-        return trim( trim($this->cfg->getEndpoint(), '/') . '/' . ltrim($resource, '/'), '/');
+    protected function uri($resource, $params=[]){
+
+        $uri    = trim( trim($this->cfg->getEndpoint(), '/') . '/' . ltrim($resource, '/'), '/');
+        $query  = '';
+
+        if( $params and is_array($params) and count($params) )
+            $query = ( '?' . http_build_query($params) );
+
+        return ( $uri . $query );
+
     }
 
     /**
@@ -205,7 +215,7 @@ class Client{
      */
     protected function query($resource, $data=[], $method=self::GET){
 
-        $url = $this->uri($resource);
+        $url = $this->uri($resource, ( self::GET == $method ? $data : NULL ) );
 
         //save last request data
         $this->lastRequest = [
@@ -218,7 +228,7 @@ class Client{
 
             switch ($method){
                 case self::GET:
-                    return $this->http()->get($url . ( count($data) ? ( '?' . http_build_query($data) ) : '' ) );
+                    return $this->http()->get($url);
 
                 case self::POST:
                     return $this->http()->post($url, [
@@ -226,13 +236,13 @@ class Client{
                     ]);
 
                 case self::PUT:
-                    throw new \Exception("Method not supported."); //not yet implemented
+                    throw new ClientException("Method not supported."); //not yet implemented
 
                 case self::PATCH:
-                    throw new \Exception("Method not supported."); //not yet implemented
+                    throw new ClientException("Method not supported."); //not yet implemented
 
                 case self::DELETE:
-                    throw new \Exception("Method not supported"); //not yet implemented
+                    throw new ClientException("Method not supported."); //not yet implemented
 
                 default:
                     throw new ClientException("Invalid request method: $method.");
@@ -418,6 +428,7 @@ class Client{
      * @param int $offset
      *
      * @return null
+     * @deprecated
      * @throws ClientException
      */
     public function getInstitutions($filters=[], $limit=15, $offset=0){
@@ -462,18 +473,21 @@ class Client{
      * Generates the sign in URI according to the data provided
      * @param array $data
      * @param bool $forward
+     * @param bool $with_token
      *
      * @return null
      * @throws ClientException
      */
-    public function generateSignInURI($data=[], $forward=FALSE){
+    public function generateSignInURI($data=[], $forward=FALSE, $with_token=FALSE){
 
         $signIn = $this->asObj('/signin', self::POST, array_merge($data, [
-            'forward' => intval($forward)
+            'forward'   => intval($forward),
+            'with_token'=> $with_token
         ]));
 
-        if( $signIn )
+        if( $signIn ){
             return $signIn->data->uri;
+        }
 
         return NULL;
 
@@ -492,13 +506,68 @@ class Client{
         if( headers_sent() )
             throw new ClientException("Could not forward the request. Headers had already been sent.");
 
-        if( $avoidMultiRedirects )
-            $uri = $this->generateSignInURI($data);
-        else
-            $uri = $this->uri('/signin');
+        if( ! $this->token )
+            throw new ClientException("Authorization token is missing. You need a valid token in order to forward sign in requests.");
 
+        $params = [];
+
+        if( ! isset($_SERVER['REQUEST_METHOD']) )
+            $_SERVER['REQUEST_METHOD'] = self::GET;
+
+        if( ( $_SERVER['REQUEST_METHOD'] == self::POST ) )
+
+            if( isset($_POST[self::TOKEN_FIELD]) ); else{
+                //we don't have the token in the request
+                $params[self::TOKEN_FIELD] = $this->token->getValue();
+
+            }
+
+        if( $avoidMultiRedirects )
+            $uri = $this->generateSignInURI($data, FALSE, count($params));
+        else
+            $uri = $this->uri('/signin', $params);
+
+        //redirect with 307 status
         return header('Location: ' . $uri, TRUE, 307);
 
+    }
+
+    /**
+     * Generates a token form field
+     * @param bool $echo
+     * @param string $name [optional] the token field name
+     *
+     * @return string
+     * @throws ClientException
+     */
+    public function tokenField($echo=TRUE, $name=self::TOKEN_FIELD){
+
+        if( ! $this->token )
+            throw new ClientException("Token missing. Make sure you authorize before requesting a token field.");
+
+        //construct html
+        $field = '<input type="hidden" name="{name}" id="{name}" value="{token}"/>';
+        $field = str_ireplace(
+            ['{name}', '{token}'],
+            [$name, $this->token->getValue()],
+            $field
+        );
+
+        if( $echo )
+            echo $field;
+
+        return $field;
+
+    }
+
+    /**
+     * Echoes the token form field
+     * @param string $fieldName
+     *
+     * @throws ClientException
+     */
+    public function tokenizeForm($fieldName=self::TOKEN_FIELD){
+        $this->tokenField(TRUE, $fieldName);
     }
 
     /**

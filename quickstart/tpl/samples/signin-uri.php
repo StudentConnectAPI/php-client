@@ -12,7 +12,29 @@ try{
         //we could send here things as email, institution_id, first_name, last_name and more
     ], FALSE);
 
-    echo ( '<a href="'. $uri .'" target="_self">Verify your student account &rarr;</a>' );
+
+    //-- output the sign in form --//
+    ?>
+
+    <form method="post" target="_self" action="<?php echo $uri; ?>">
+
+        <?php
+
+            //tokenize the form, so we have our token sent with the request
+            $Client->tokenizeForm();
+
+        ?>
+
+        <!-- the actual button -->
+        <button class="btn btn-lg btn-info" type="submit">
+            Verify your student account &rarr;</i>
+        </button>
+        <!-- the actual button -->
+
+    </form>
+
+    <?php
+    //-- output the sign in form --//
 
 }
 catch (ClientException $e){

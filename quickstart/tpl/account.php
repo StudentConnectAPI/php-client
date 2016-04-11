@@ -47,9 +47,12 @@ global $Client; ?>
                 <?php echo code_snippet('signin-uri'); ?>
 
                 <h4 id="profile-signin-url">Result</h4>
-                <a class="btn btn-lg btn-info" href="<?php echo $url;?>" target="_self">
-                    Verify your student account <i class="fa fa-arrow-right"></i>
-                </a>
+                <form name="signInForm" id="signInForm" method="post" target="_blank" action="<?php echo $url;?>">
+                    <?php $Client->tokenizeForm(); ?>
+                    <button class="btn btn-lg btn-info" type="submit">
+                        Verify your student account <i class="fa fa-arrow-right"></i>
+                    </button>
+                </form>
 
         <?php endif; ?>
 
