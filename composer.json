@@ -12,7 +12,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=5.5.9",
-        "guzzlehttp/guzzle": "6.0.*",
+        "guzzlehttp/guzzle": "^6.0",
         "acquia/http-hmac-php": "^2.1"
     },
     "require-dev": {

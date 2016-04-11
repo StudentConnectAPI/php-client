@@ -86,7 +86,11 @@ function show_error($message, $request=NULL, $response=NULL){
             <p>Would you like to <a href="?logout=1">correct your credentials</a> ?</p>
         <?php endif; ?>
     </div>
+    <hr style="clear: both;"/>
     <?php
+
+    if( ! $Client->hasToken() )
+        die(); //fatal error
 
 }
 
