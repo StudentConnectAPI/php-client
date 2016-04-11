@@ -38,14 +38,25 @@ class Token{
         return $this->value;
     }
 
+    /**
+     * Returns expiry time
+     * @param string $format [optional] desired format
+     *
+     * @return null
+     */
     public function getExpiry($format='U'){
         
         if( 'U' != $format )
             return date($format, $this->expiry);
 
         return $this->expiry;
+
     }
 
+    /**
+     * checks if the token is expired
+     * @return bool
+     */
     public function isExpired(){
 
         $tz = new \DateTimeZone(Settings::TIMEZONE);
@@ -58,6 +69,10 @@ class Token{
         return ( $now >= $then );
     }
 
+    /**
+     * @return bool
+     * @see Token::isExpired()
+     */
     public function isValid(){
         return ! $this->expired;
     }
@@ -68,6 +83,29 @@ class Token{
      */
     public function __toString() {
         return $this->value;
+    }
+
+    /**
+     * Creates a new token object from a string
+     * @param $string
+     * @param $ttl
+     * @return self
+     */
+    public static function createFromString($string, $ttl=1800){
+
+        $obj = new \stdClass();
+
+        $tz       = new \DateTimeZone(Settings::TIMEZONE);
+        $now      = new \DateTime('now', $tz);
+        $interval = new \DateInterval("P{$ttl}S");
+
+        $now->add($interval);
+
+        $obj->token         = strval($string);
+        $obj->expires_at    = $now->getTimestamp();
+
+        return new self($obj);
+
     }
 
 }
