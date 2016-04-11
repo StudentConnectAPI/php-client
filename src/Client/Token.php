@@ -94,15 +94,17 @@ class Token{
     public static function createFromString($string, $ttl=1800){
 
         $obj = new \stdClass();
+        $data= new \stdClass();
 
         $tz       = new \DateTimeZone(Settings::TIMEZONE);
         $now      = new \DateTime('now', $tz);
-        $interval = new \DateInterval("P{$ttl}S");
 
-        $now->add($interval);
+        $now->setTimestamp( $now->getTimestamp() + $ttl );
 
-        $obj->token         = strval($string);
-        $obj->expires_at    = $now->getTimestamp();
+        $data->token         = strval($string);
+        $data->expires_at    = $now->getTimestamp();
+
+        $obj->data = $data;
 
         return new self($obj);
 
