@@ -53,7 +53,7 @@ class Middleware extends HmacAuthMiddleware{
      *
      * @return string
      */
-    protected function generateNonce($length=16, $keyspace='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ|[]{}()*&^%$#@!+-_±'){
+    protected function generateNonce($length=16, $keyspace='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ|[]{}()*&^%$#@!+-_'){
 
         $str = '';
 

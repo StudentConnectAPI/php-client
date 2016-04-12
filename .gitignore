@@ -3,3 +3,4 @@
 /public
 /logs
 /.endpoints
+tests/_output/*
