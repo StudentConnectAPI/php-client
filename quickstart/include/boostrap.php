@@ -8,12 +8,8 @@
 require_once ( __DIR__ . '/../../vendor/autoload.php' );
 require_once ( __DIR__ .'/helpers.php');
 
-//set session defaults
-ini_set('session.cookie_lifetime', 7200);
-ini_set('session.gc_maxlifetime', 7200);
-
 //start the current session
-session_name("STUDENTCONNECTCLIENT");
+session_name("client");
 session_start();
 
 if( isset($_GET['logout']) and boolval($_GET['logout']) )

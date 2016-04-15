@@ -49,8 +49,8 @@ global $Client; ?>
                 <h4 id="profile-signin-url">Result</h4>
                 <form name="signInForm" id="signInForm" method="post" target="_blank" action="<?php echo $url;?>">
                     <?php $Client->tokenizeForm(); ?>
-                    <button class="btn btn-lg btn-info" type="submit">
-                        Verify your student account <i class="fa fa-arrow-right"></i>
+                    <button class="btn btn-lg btn-success" type="submit">
+                        <em><i class="fa fa-graduation-cap"></i> Verify your student account </em>
                     </button>
                 </form>
 
@@ -60,4 +60,4 @@ global $Client; ?>
 </div>
 
 
-<h3>Advanced</h3>
+<h2>Advanced</h2>

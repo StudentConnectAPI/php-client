@@ -14,7 +14,7 @@ $token = NULL;
 
 $token = ( $t = getOption('api_token') ) ? $t : NULL; ?>
 
-<h3>Basics</h3>
+<h2>Basics</h2>
 <p>How you authenticate, request sign in and profile details</p><hr/>
 
 <div class="panel panel-default">
@@ -30,7 +30,7 @@ $token = ( $t = getOption('api_token') ) ? $t : NULL; ?>
                 </p>
             </div>
 
-            <pre><code><?php echo $token->getValue(); ?></code></pre>
+            <pre><code class="php">"<?php echo $token->getValue(); ?>"</code></pre>
 
             <h4>Code</h4>
             <?php

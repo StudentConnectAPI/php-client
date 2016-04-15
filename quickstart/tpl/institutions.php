@@ -16,10 +16,10 @@ $token = ( $t = getOption('api_token') ) ? $t : NULL; ?>
         <?php if( $Client->get('/institutions', ['country'=>'GB', 'limit'=>2]) ): ?>
 
                 <h4>Request</h4>
-                <?php echo $Client->getFormattedRequest('<pre><code>', '</code></pre>'); ?>
+                <?php echo $Client->getFormattedRequest('<pre><code class="json">', '</code></pre>'); ?>
 
                 <h4>Response</h4>
-                <?php echo $Client->getFormattedResponse('<pre><code>', '</code></pre>'); ?>
+                <?php echo $Client->getFormattedResponse('<pre><code class="json">', '</code></pre>'); ?>
 
                 <h4>Code</h4>
                 <?php echo code_snippet('institutions'); ?>

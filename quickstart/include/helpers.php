@@ -65,7 +65,7 @@ function code_snippet($snippet, $vars=[], $cutLines=1){
             for ($i=0; $i<$cutLines; $i++)
                 $contents= substr($contents, strpos($contents, "\n")+1);
 
-        return ('<pre>' . htmlentities($contents) . '</pre>');
+        return ('<pre><code class="php">' . htmlentities( "<?php\n\n" . trim($contents) ) . '</code></pre>');
 
     }
 

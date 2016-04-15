@@ -22,14 +22,28 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
     <link rel="stylesheet" media="all" href="https://cdn.studentmoneysaver.co.uk/assets/css/bootstrap.min.css?v=v3.0.4.6"/>
     <link rel="stylesheet" media="all" href="https://cdn.studentmoneysaver.co.uk/assets/css/font-awesome.min.css?v=v3.0.4.6"/>
     <link rel="stylesheet" media="all" href="https://cdn.studentmoneysaver.co.uk/assets/css/jquery-ui.min.css?v=v3.0.4.6"/>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&subset=latin,latin-ext" rel="stylesheet" type="text/css"/>
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css"/>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet" type="text/css"/>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css" rel="stylesheet" type="text/css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/idea.min.css" rel="stylesheet" type="text/css"/>
+
     <style type="text/css">
         html, body{
             margin: 0px auto;
             padding: 0px;
-            font-family: "Open Sans", "Helvetica Neue", Arial sans-serif;
+            font-family: "Lato", "Helvetica Neue", Helvetica, Arial sans-serif;
             font-size: 16px;
             background: #f5f5f5;
+        }
+
+        p{
+            font-size: 18px;
+        }
+
+        h4{
+            font-size: 20px;
         }
 
         body{
@@ -63,12 +77,13 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
         }
 
         pre{
-            background: #333;
-            color: #fff;
+            font-family: "Source Sans Pro", monospace sans-serif;
+            background: #fff;
+            color: #222222;
             font-size: 100%;
-            border: 4px #dddddd solid;
-            box-shadow:inset 2px 2px 2px rgba(0, 0, 0, .3);
-            padding: 15px;
+            border: 2px #dfdfdf solid;
+            box-shadow:inset 2px 2px 2px rgba(0, 0, 0, .1);
+            padding: 0px;
         }
 
         pre:hover{
@@ -88,6 +103,7 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
 
         .header a{
             color: #fff;
+            font-weight: bold;
         }
 
         .brand{
@@ -218,16 +234,16 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="https://docs.studentconnectapi.com" target="_blank">
-                                        API Docs <i class="fa fa-external-link"></i>
+                                        API Docs  <i class="fa fa-external-link"></i>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="http://studentconnectapi.com#contact" target="_blank">
-                                        Request an App Key <i class="fa fa-external-link"></i>
+                                        Request an App Key  <i class="fa fa-external-link"></i>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="<?php echo basename(__FILE__) ?>?logout=1" title="leave current session" onclick="confirm('You\'re about to leave the current session. Are you sure you want to?')">
+                                    <a class="nav-link" href="<?php echo basename(__FILE__) ?>?logout=1" title="leave current session" onclick="alert('You\'re leaving the current session. \nYour api key and secret will be forgotten.')">
                                         <i class="fa fa-sign-out"></i>
                                     </a>
                                 </li>
@@ -243,10 +259,10 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
 
         <div class="row">
             <div class="col-lg-12">
-                <h2>Quickstart Guide</h2>
+                <h1>Quickstart Guide</h1>
                 <p class="lead">
                     This is a demo of the StudentConnect API for the tech savy ones.
-                    Find out more at <a href="http://studentconnectapi.com/" target="_blank">studentconnectapi.com</a>.
+                    Find out more at <a href="http://studentconnectapi.com" target="_blank">studentconnectapi.com</a>.
                 </p>
                 <hr style="border-color: #19C2FA;"/>
             </div>
@@ -306,5 +322,7 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
 
     </div>
 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
+    <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
 </body>
 </html>
