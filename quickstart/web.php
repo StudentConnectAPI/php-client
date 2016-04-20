@@ -282,12 +282,16 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
                     display('account');
 
                     //request a list of institutions
-                    display('institutions');
+                    display('client');
 
                 }
                 else
                     display('credentials', TRUE);
 
+                //stop output if errors were detected
+                if( has_error() )
+                    exit();
+                
                 ?>
 
             </div>

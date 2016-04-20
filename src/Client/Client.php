@@ -14,6 +14,7 @@ use StudentConnect\API\Client\Auth\HMAC\Headers;
 use \StudentConnect\API\Client\Auth\HMAC\Settings;
 use StudentConnect\API\Client\Auth\HMAC\Middleware;
 use StudentConnect\API\Client\Auth\HMAC\Request\Signer;
+use StudentConnect\API\Client\Exceptions\AccessDeniedException;
 use StudentConnect\API\Client\Exceptions\TokenException;
 use \StudentConnect\API\Client\Exceptions\ClientException;
 use StudentConnect\API\Client\Exceptions\ResourceNotFoundException;
@@ -260,10 +261,15 @@ class Client{
                 case 400:
                     throw new ClientException( $e->getMessage(), $e );
 
+                case 403:
+                    throw new AccessDeniedException($e->getMessage(), $e);
+
                 case 404:
                     throw new ResourceNotFoundException($e->getMessage(), $e);
 
             }
+
+            throw new ClientException( $e->getMessage(), $e );
 
         }
         catch (ServerException $e){
@@ -413,33 +419,26 @@ class Client{
         $this->retrieveToken();
     }
 
+    /**
+     * Retrieves latest response's data field
+     * @param null $key
+     * @param null $default
+     *
+     * @return null|\stdClass
+     */
     public function getResponseData($key=NULL, $default=NULL){
         return $key ? ( isset($this->data->$key) ? $this->data->$key : $default ) : $this->data;
     }
 
+    /**
+     * Retrieves latest response's meta field
+     * @param $key
+     * @param null $default
+     *
+     * @return null|\stdClass
+     */
     public function getResponseMeta($key, $default=NULL){
         return $key ? ( isset($this->meta->$key) ? $this->meta->$key : $default ) : $this->meta;
-    }
-
-    /**
-     * Retrieves a list of institutions
-     * @param array $filters
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return null
-     * @deprecated
-     * @throws ClientException
-     */
-    public function getInstitutions($filters=[], $limit=15, $offset=0){
-
-        $list = $this->asObj('/institutions', self::GET, array_merge($filters, [
-            'limit'  => $limit,
-            'offset' => $offset,
-        ]));
-
-        return $list->data;
-
     }
 
     /**
@@ -453,7 +452,7 @@ class Client{
 
             if( $this->hasToken() ){
 
-                $account = $this->asObj( '/profiles/' . $this->token->getValue() );
+                $account = $this->asObj( '/profile' );
 
                 return $account->data;
 

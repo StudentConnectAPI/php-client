@@ -94,6 +94,14 @@ function show_error($message, $request=NULL, $response=NULL){
 
 }
 
+function has_error(){
+
+    global $Error;
+
+    return $Error ? TRUE : FALSE;
+
+}
+
 function init_client(){
 
     global $Client, $Error;
