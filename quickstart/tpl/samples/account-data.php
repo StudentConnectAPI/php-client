@@ -9,7 +9,7 @@ use StudentConnect\API\Client\Exceptions\ClientException;
 try{
 
     //retrieve user profile
-    $profile = $Client->getProfile();
+    $profile = $Client->getCurrentProfile();
 
     //see what we've got
     var_dump($profile);

@@ -11,11 +11,14 @@ global $Client; ?>
     <div class="panel-heading" id="profile"><h3><i class="fa fa-cog"></i> Profile</h3></div>
     <div class="panel-body">
 
-        <?php if( $Client->getProfile() ) : ?>
+        <?php if( $Client->getCurrentProfile() ) : ?>
 
             <div class="alert alert-info">
                 <p>
-                    <i class="fa fa-info-circle"></i> The profile exists and we hav access to it using the token.
+                    <i class="fa fa-info-circle"></i>
+                    The profile exists and we have access to it using the token. <br/>
+                    Depending if the user granted us access, to their data, we may see the full profile
+                    or just a garbled email address.
                 </p>
             </div>
 

@@ -446,7 +446,7 @@ class Client{
      * @return object|null
      * @throws ClientException
      */
-    public function getProfile(){
+    public function getCurrentProfile(){
 
         try{
 

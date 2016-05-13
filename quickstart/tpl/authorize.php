@@ -25,8 +25,7 @@ $token = ( $t = getOption('api_token') ) ? $t : NULL; ?>
 
             <div class="alert alert-info">
                 <p>
-                    <i class="fa fa-info-circle"></i> Our client is already authorized.
-                    Authorization token is shown below.
+                    <i class="fa fa-info-circle"></i> Our client is already authorized, with the token below.
                 </p>
             </div>
 
@@ -47,7 +46,8 @@ $token = ( $t = getOption('api_token') ) ? $t : NULL; ?>
                 <p>
                     <i class="fa fa-info-circle"></i>
                     In order to interact with the API we need to authorize our client first. We send a signed request to the
-                    <em>/authorize</em> resource, and receive a unique token.
+                    <em>/authorize</em> resource, and receive a unique client token alongside a set of permissions -
+                    actions, paths and data we can access with the token.
                 </p>
             </div>
 

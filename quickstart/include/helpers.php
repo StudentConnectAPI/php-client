@@ -115,7 +115,7 @@ function init_client(){
                 $Client = new \StudentConnect\API\Client\Client(API_ENDPOINT);
                 $Client->setToken($token);
 
-                if( $Client->getProfile() )
+                if( $Client->getCurrentProfile() )
                     setOption('verified', TRUE);
             }
             else{
@@ -152,5 +152,5 @@ function is_verified(){
     if( $verified = getOption('verified') )
         return $verified;
 
-    return ( $Client and $Client->hasToken() and $Client->getProfile() );
+    return ( $Client and $Client->hasToken() and $Client->getCurrentProfile() );
 }
