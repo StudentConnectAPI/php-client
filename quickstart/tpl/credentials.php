@@ -5,10 +5,13 @@
  * @version 1.0
  */
 
+$env = new \Dotenv\Dotenv(__DIR__ . '/../../');
+$env->load();
+
 $external = ( __DIR__ . '/../../.endpoints' );
 
 $endpoints = [
-     ($endpoint = getOption('api_endpoint') ? $endpoint : 'https://v1.teststudentconnectapi.com/api'),
+     ( $endpoint = getOption('api_endpoint') ? $endpoint : 'https://v1.teststudentconnectapi.com/api'),
     'https://v1.studentconnectapi.com/api'
 ];
 
@@ -26,9 +29,15 @@ if( file_exists( $external ) )
                 <div class="col-sm-10">
                     <div class="input-group">
                         <select class="form-control input-lg" id="api_endpoint" name="api_endpoint">
+
+                            <?php if( $default = getenv('API_ENDPOINT') ): ?>
+                                <option selected><?php echo $default; ?></option>
+                            <?php endif; ?>
+
                             <?php foreach ($endpoints as $endpoint): ?>
                                     <option><?php echo $endpoint; ?></option>
                             <?php endforeach; ?>
+
                         </select>
                         <span class="input-group-addon"><a href="#endpoint" onclick="window.open(document.getElementById('api_endpoint').value);" target="_blank"><i class="fa fa-external-link"></i></a></span>
                     </div>
@@ -37,13 +46,13 @@ if( file_exists( $external ) )
             <div class="form-group">
                 <label for="app_key" class="col-sm-2 control-label">Application Key:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control input-lg" id="app_key" name="app_key" placeholder="..." value="<?php  echo ( $appKey = getOption('app_key') ? $appKey : '' ); ?>"/>
+                    <input type="text" class="form-control input-lg" id="app_key" name="app_key" placeholder="..." value="<?php  echo ( $appKey = getOption('app_key') ? $appKey : getenv('API_KEY') ); ?>"/>
                 </div>
             </div>
             <div class="form-group">
                 <label for="app_secret" class="col-sm-2 control-label">Application Secret:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control input-lg" id="app_secret" name="app_secret" placeholder="..." value="<?php  echo ( $appSecret = getOption('app_secret') ? $appSecret : '' ); ?>"/>
+                    <input type="text" class="form-control input-lg" id="app_secret" name="app_secret" placeholder="..." value="<?php  echo ( $appSecret = getOption('app_secret') ? $appSecret : getenv('API_SECRET') ); ?>"/>
                 </div>
             </div>
             <div class="form-group">
