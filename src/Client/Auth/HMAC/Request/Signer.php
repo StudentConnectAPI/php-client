@@ -50,7 +50,7 @@ class Signer extends RequestSigner{
     public function getSignature(RequestInterface $request) {
 
         if ( ! $request->hasHeader( Headers::AUTHORIZATION ) ) {
-
+                //no Authorization header
                 throw new AuthorizationException("Authorization header required. Requests sent to the API need to be signed or provide an identification token.");
         }
 

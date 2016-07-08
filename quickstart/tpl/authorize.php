@@ -15,18 +15,23 @@ $token = NULL;
 $token = ( $t = getOption('api_token') ) ? $t : NULL; ?>
 
 <h2>Basics</h2>
-<p>How you authenticate, request sign in and profile details</p><hr/>
+<p>How you authorize your client, request sign in and capture profile data.</p><hr/>
 
 <div class="panel panel-default">
     <div class="panel-heading"><h3><i class="fa fa-cog"></i> Client authorization</h3></div>
     <div class="panel-body">
 
+        <p class="larger">
+            In order to request profile data, you first need to create a unique token. To create a token you have to
+            make a signed request to <code>/authorize</code>. <br/>
+            If your signature validates, you will receive a token. <br/>
+            If you already have one, you can set up the client using the token.
+        </p>
+
         <?php if( $token and $token->isValid() ) : ?>
 
             <div class="alert alert-info">
-                <p>
-                    <i class="fa fa-info-circle"></i> Our client is already authorized, with the token below.
-                </p>
+                <p><i class="fa fa-info-circle"></i> Our client is already authorized, with the token below.</p>
             </div>
 
             <pre><code class="php">"<?php echo $token->getValue(); ?>"</code></pre>

@@ -36,6 +36,7 @@ class Version2 extends Version1{
      * @return string
      */
     protected function getMessage(RequestSignerInterface $requestSigner, RequestInterface $request) {
+
         $parts = [
             $this->getMethod($request),
             $this->getHash($request),
@@ -44,6 +45,10 @@ class Version2 extends Version1{
             $this->getCustomHeaders($requestSigner, $request),
             $this->getResource($request)
         ];
+
+        //TODO add debug to file ...
+        $data = join("\n", $parts);
+        file_put_contents('/var/www/debug.txt', $data, FILE_APPEND);
 
         return join("\n", $parts);
 

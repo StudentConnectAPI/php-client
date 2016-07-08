@@ -13,16 +13,16 @@
     "require": {
         "php": ">=5.5.9",
         "guzzlehttp/guzzle": "^6.2",
-        "acquia/http-hmac-php": "^2.1"
+        "acquia/http-hmac-php": "^2.1",
+        "monolog/monolog": "^1.20"
     },
     "require-dev": {
-        "monolog/monolog": "1.9.*",
-        "vlucas/phpdotenv": "^2.2",
-        "fzaninotto/faker": "^1.5",
-        "phpunit/phpunit": "^5.2",
+        "vlucas/phpdotenv": "^2.3",
+        "fzaninotto/faker": "^1.6",
+        "phpunit/phpunit": "^5.4",
         "codeception/phpbuiltinserver": "^1.2",
-        "mockery/mockery": "^0.9.4",
-        "codeception/codeception": "^2.1"
+        "mockery/mockery": "^0.9",
+        "codeception/codeception": "^2.2"
     },
     "autoload": {
         "psr-4" : {

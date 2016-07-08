@@ -10,6 +10,8 @@ namespace StudentConnect\API\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Client as HTTPClient;
 use GuzzleHttp\Exception\ServerException;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use StudentConnect\API\Client\Auth\HMAC\Headers;
 use \StudentConnect\API\Client\Auth\HMAC\Settings;
 use StudentConnect\API\Client\Auth\HMAC\Middleware;
@@ -102,7 +104,9 @@ class Client{
      * @param $secret
      */
     public function __construct($endpoint, $key=NULL, $secret=NULL) {
+
         $this->configure($endpoint, $key, $secret);
+
     }
 
     /**
@@ -113,6 +117,10 @@ class Client{
      */
     public function configure($endpoint, $key, $secret){
         $this->cfg = new Configuration($endpoint, $key, $secret);
+    }
+
+    public function addLogger(Logger $logger){
+        //TODO...
     }
 
     /**
@@ -469,20 +477,19 @@ class Client{
     }
 
     /**
-     * Generates the sign in URI according to the data provided
-     * @param array $data
+     * Generates the sign in URI
      * @param bool $forward
      * @param bool $with_token
      *
      * @return null
      * @throws ClientException
      */
-    public function generateSignInURI($data=[], $forward=FALSE, $with_token=FALSE){
+    public function generateSignInURI($forward=FALSE, $with_token=FALSE){
 
-        $signIn = $this->asObj('/signin', self::POST, array_merge($data, [
+        $signIn = $this->asObj('/signin', self::POST, [
             'forward'   => intval($forward),
             'with_token'=> $with_token
-        ]));
+        ]);
 
         if( $signIn ){
             return $signIn->data->uri;

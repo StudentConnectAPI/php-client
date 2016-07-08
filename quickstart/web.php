@@ -19,23 +19,154 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
 
     <title>Quick Start with StudentConnect API</title>
 
-    <link rel="stylesheet" media="all" href="https://cdn.studentmoneysaver.co.uk/assets/css/bootstrap.min.css?v=v3.0.4.6"/>
-    <link rel="stylesheet" media="all" href="https://cdn.studentmoneysaver.co.uk/assets/css/font-awesome.min.css?v=v3.0.4.6"/>
-    <link rel="stylesheet" media="all" href="https://cdn.studentmoneysaver.co.uk/assets/css/jquery-ui.min.css?v=v3.0.4.6"/>
+</head>
+<body>
 
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css"/>
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet" type="text/css"/>
+    <div class="wrapper">
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css" rel="stylesheet" type="text/css"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/idea.min.css" rel="stylesheet" type="text/css"/>
+        <div class="header">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-6 col-md-4 col-sm-12 col-xs-12">
+                        <div class="brand">
+                            <a class="logo" href="<?php echo basename(__FILE__) ?>" target="_self">
+                                <img src="assets/studentconnect-logo.png"/>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                        <div class="pull-right menu">
+                            <nav class="navbar">
+                                <ul class="nav navbar-nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="https://docs.studentconnectapi.com" target="_blank">
+                                            Read the docs  <i class="fa fa-external-link"></i>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="http://studentconnectapi.com#contact" target="_blank">
+                                            Request access  <i class="fa fa-external-link"></i>
+                                        </a>
+                                    </li>
 
-    <style type="text/css">
+                                    <?php if( getOption('app_key') ): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="<?php echo basename(__FILE__) ?>?logout=1" title="leave current session" onclick="alert('You\'re leaving the current session. \nYour api key and secret will be forgotten.')">
+                                                Exit session <i class="fa fa-power-off"></i>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1>Quick-Start Guide</h1>
+                        <p class="lead">
+                            This is a demo of the StudentConnect API for the tech savy ones.
+                            Find out more at <a href="http://studentconnectapi.com" target="_blank">studentconnectapi.com</a>.
+                        </p>
+                        <hr style="border-color: #19C2FA;"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <?php
+
+                        if( init_client() ){
+
+                            //request token
+                            display('authorize');
+
+                            //request account details
+                            display('account');
+
+                            //request a list of institutions
+                            display('client');
+
+                        }
+                        else
+                            display('credentials', TRUE);
+
+                        //stop output if errors were detected
+                        if( has_error() )
+                            exit();
+
+                        ?>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="column">
+                        <em>
+                            <a href="https://www.studentconnectapi.com/" target="_blank">visit StudentConnectAPI.com</a>
+                        </em>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <ul class="menu list-unstyled">
+                        <li><a href="https://docs.studentconnectapi.com" target="_blank">API Docs</a></li>
+                        <li><a href="https://studentconnectapi.com/#contact" target="_blank">Contact us</a></li>
+                        <li><a href="https://studentmoneysaver.co.uk/advertise" target="_blank">Advertise</a></li>
+                        <li><img src="assets/studentconnect-icon.png"/></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <link rel="stylesheet" property="stylesheet" media="all" href="https://cdn.studentmoneysaver.co.uk/assets/css/bootstrap.min.css?v=v3.0.4.6"/>
+    <link rel="stylesheet" property="stylesheet" media="all" href="https://cdn.studentmoneysaver.co.uk/assets/css/font-awesome.min.css?v=v3.0.4.6"/>
+    <link rel="stylesheet" property="stylesheet" media="all" href="https://cdn.studentmoneysaver.co.uk/assets/css/jquery-ui.min.css?v=v3.0.4.6"/>
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" property="stylesheet" type="text/css"/>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" property="stylesheet" rel="stylesheet" type="text/css"/>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css" rel="stylesheet" property="stylesheet" type="text/css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/idea.min.css" rel="stylesheet" property="stylesheet" type="text/css"/>
+
+    <style type="text/css" scoped>
+
         html, body{
-            margin: 0px auto;
-            padding: 0px;
+            min-height: 100%;
+            height: 100%;
+        }
+
+        body{
             font-family: "Lato", "Helvetica Neue", Helvetica, Arial sans-serif;
             font-size: 16px;
             background: #f5f5f5;
+        }
+
+        .wrapper{
+            padding: 0px;
+            margin: 0px;
+            width: 100%;
+            min-height: 100%;
+            margin-bottom: -180px;
         }
 
         p{
@@ -44,10 +175,6 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
 
         h4{
             font-size: 20px;
-        }
-
-        body{
-            margin-top: 60px;
         }
 
         h1, .h1, h2, .h2, h3, .h3{
@@ -103,11 +230,10 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
 
         .header a{
             color: #fff;
-            font-weight: bold;
         }
 
         .brand{
-            padding: 7px 0px;
+            padding: 15px 0px;
             display: block;
             font-size: 1em;
         }
@@ -119,6 +245,7 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
         .navbar{
             border: none;
             margin-bottom: 0px;
+            font-size: 1.2em;
         }
 
         .navbar-nav>li>a.badge{
@@ -137,8 +264,8 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
 
         .navbar-nav>li>a,
         .navbar-nav>li>a.badge{
-            padding-top: 15px;
-            padding-bottom: 15px;
+            padding-top: 21px;
+            padding-bottom: 21px;
             font-size: 100%;
         }
 
@@ -146,6 +273,12 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
         .navbar-nav>li>a:focus,
         .navbar-nav>li>a:active{
             background: #05a6db;
+        }
+
+        .main-content{
+            margin-top: 80px;
+            width: 100%;
+            height: auto;
         }
 
         .panel{
@@ -165,8 +298,8 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
         }
 
         .footer{
-            margin-top: 20px;
-            min-height: 100px;
+            width: 100%;
+            height: 100px;
             background: #32353b;
             padding: 20px 0px;
             color: #ffffff;
@@ -203,128 +336,25 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
             padding: 12px 0px;
             display: block;
         }
+
+        @media screen and (max-width: 1024px) {
+            .navbar{
+                font-size: 1.1em;
+            }
+
+            .menu{
+                width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 640px) {
+
+            .navbar-nav>li>a{
+                padding-bottom: 10px;
+                padding-top: 10px;
+            }
+        }
     </style>
-</head>
-<body>
-
-    <div class="header">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="brand">
-                        <a class="logo" href="<?php echo basename(__FILE__) ?>" target="_self">
-                            <img src="assets/studentconnect-logo.png"/>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="pull-right menu">
-                        <nav class="navbar">
-                            <ul class="nav navbar-nav">
-                                <li class="nav-item">
-                                    <?php if( is_verified() ): ?>
-                                          <a class="badge verified"  href="#profile">
-                                              <strong>verified <i class="fa fa-check"></i> </strong>
-                                          </a>
-                                    <?php else: ?>
-                                        <a class="badge" href="#profile-signin-url">
-                                            <strong>anonymous <i class="fa fa-circle"></i> </strong>
-                                        </a>
-                                    <?php endif; ?>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="https://docs.studentconnectapi.com" target="_blank">
-                                        API Docs  <i class="fa fa-external-link"></i>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="http://studentconnectapi.com#contact" target="_blank">
-                                        Request an App Key  <i class="fa fa-external-link"></i>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="<?php echo basename(__FILE__) ?>?logout=1" title="leave current session" onclick="alert('You\'re leaving the current session. \nYour api key and secret will be forgotten.')">
-                                        <i class="fa fa-sign-out"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container-fluid">
-
-        <div class="row">
-            <div class="col-lg-12">
-                <h1>Quickstart Guide</h1>
-                <p class="lead">
-                    This is a demo of the StudentConnect API for the tech savy ones.
-                    Find out more at <a href="http://studentconnectapi.com" target="_blank">studentconnectapi.com</a>.
-                </p>
-                <hr style="border-color: #19C2FA;"/>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-12">
-
-                <?php
-
-                if( init_client() ){
-
-                    //request token
-                    display('authorize');
-
-                    //request account details
-                    display('account');
-
-                    //request a list of institutions
-                    display('client');
-
-                }
-                else
-                    display('credentials', TRUE);
-
-                //stop output if errors were detected
-                if( has_error() )
-                    exit();
-                
-                ?>
-
-            </div>
-        </div>
-
-    </div>
-
-    <div class="footer">
-
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="column">
-                        <em>
-                            <a href="https://www.studentmoneysaver.co.uk/">visit StudentMoneySaver.co.uk</a>
-                        </em>
-                    </div>
-                </div>
-
-                <div class="col-lg-8">
-                    <ul class="menu list-unstyled">
-                        <li><a href="https://docs.studentconnectapi.com">API Docs</a></li>
-                        <li><a href="https://studentconnectapi.com/#contact">Contact us</a></li>
-                        <li><a href="https://studentmoneysaver.co.uk/advertise">Advertise</a></li>
-                        <li>
-                            <img src="assets/studentconnect-icon.png"/>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-    </div>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
     <script type="text/javascript">hljs.initHighlightingOnLoad();</script>

@@ -8,10 +8,7 @@ use StudentConnect\API\Client\Exceptions\ClientException;
 
 try{
 
-    $uri = $Client->generateSignInURI([
-        //additionally you could add here email, institution_id, first_name, last_name or other
-        //valuable data for generating the sign in URI
-    ], FALSE);
+    $uri = $Client->generateSignInURI();
 
 
     //-- output the sign in form --//
@@ -27,8 +24,8 @@ try{
         ?>
 
         <!-- the sign in button -->
-        <button class="btn btn-lg btn-info" type="submit">
-            Verify your student account &rarr;
+        <button type="submit">
+            <img src="https://cdn.studentconnectapi.com/branding/buttons/studentconnect-button-blue-sm.png"/>
         </button>
         <!-- the sign in button -->
 
