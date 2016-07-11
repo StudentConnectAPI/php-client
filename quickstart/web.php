@@ -136,6 +136,8 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
             </div>
         </div>
 
+        <div class="clearfix"></div>
+
     </div>
 
     <link rel="stylesheet" property="stylesheet" media="all" href="https://cdn.studentmoneysaver.co.uk/assets/css/bootstrap.min.css?v=v3.0.4.6"/>
@@ -151,8 +153,8 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
     <style type="text/css" scoped>
 
         html, body{
-            min-height: 100%;
-            height: 100%;
+            min-height: 100vh;
+            height: auto;
         }
 
         body{
@@ -162,11 +164,14 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
         }
 
         .wrapper{
+            float: left;
+            clear: both;
             padding: 0px;
             margin: 0px;
             width: 100%;
-            min-height: 100%;
-            margin-bottom: -180px;
+            min-height: 100vh;
+            height: auto;
+            margin-bottom: -100px;
         }
 
         p{
@@ -277,12 +282,9 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
 
         .main-content{
             margin-top: 80px;
+            padding-bottom: 160px;
             width: 100%;
             height: auto;
-        }
-
-        .panel{
-            border-color: #19C2FA;
         }
 
         .panel-default>.panel-heading{
@@ -293,15 +295,16 @@ require_once ( __DIR__ . '/include/boostrap.php' ); ?>
             margin-bottom: 10px;
             width: 100%;
             border-bottom: 1px dashed #dddddd;
-            padding: 10px 0px;
+            padding: 10px 0;
             padding-top: 20px;
         }
 
         .footer{
+            clear: both;
             width: 100%;
             height: 100px;
             background: #32353b;
-            padding: 20px 0px;
+            padding: 20px 0;
             color: #ffffff;
         }
 

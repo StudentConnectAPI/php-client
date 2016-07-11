@@ -54,8 +54,7 @@ global $Client; ?>
                 <div class="alert alert-info">
                     <p>
                         <i class="fa fa-info-circle"></i> We don't have yet access to the the user profile.
-                        We generate the sign in URL and ask them to verify their account. <br/>
-                        <a href="#">Check this video</a> to find out how you can verify as a student using the demo platform.
+                        We generate the sign in URL and ask them to verify their account.
                     </p>
                 </div>
 
@@ -76,10 +75,16 @@ global $Client; ?>
                     </button>
                 </form>
 
+                <h4>How to verify?</h4>
+
+                <p>
+                    <a href="http://quick.as/wp0qfn6qd" target="_blank">Check this video</a> to find out how you can
+                    verify as a student, using the demo platform, and grant application access to your account.
+                    At the end of the signup process you'll be redirected to the HTTP Bin page. <br/>
+                    Once you reach that page, get back to this page and reload it. <br/>
+                    You will then get the profile data of the user.
+                </p>
         <?php endif; ?>
 
     </div>
 </div>
-
-
-<h2>Advanced</h2>

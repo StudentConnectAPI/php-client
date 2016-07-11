@@ -10,8 +10,13 @@ global $Client;
 $token = ( $t = getOption('api_token') ) ? $t : NULL; ?>
 
 <div class="panel panel-default">
-    <div class="panel-heading"><h3><i class="fa fa-cog"></i> Retrieving current client data</h3></div>
+    <div class="panel-heading"><h3><i class="fa fa-cog"></i> Retrieving your app settings</h3></div>
     <div class="panel-body">
+
+        <p>
+            Getting your app info as as easy as calling GET on the <code>/client</code> resource.
+            Or using the client: <code>$data = $Client->get('/client')</code>
+        </p>
 
         <?php if( $Client->get('/client') ): ?>
 
