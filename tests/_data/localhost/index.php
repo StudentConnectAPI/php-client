@@ -5,27 +5,45 @@
  * @version 1.0
  */
 
+//auto-loader
+require_once ( __DIR__ . '/../../../vendor/autoload.php' );
+require_once ( __DIR__ . '/include/responses.php' );
+
 $path = trim($_SERVER['REQUEST_URI'], '/');
 
-
+//return response depending on path
 switch ($path){
 
     case 'authorize': {
 
-        header('Content-Type: application/json');
-
-        echo file_get_contents(__DIR__ . '/responses/authorize.json');
+        if( isValidSignature() )
+            authorizeResponse();
+        else
+            badRequestResponse('Invalid signature. Please try again.');
 
     }; break;
 
+    case 'signin': {
 
-    case 'token': {
+        if( hasValidToken() )
+            signinResponse();
+        else
+            badRequestResponse('Invalid token. Please try again.');
 
     }; break;
 
     case 'profile': {
 
+        if( hasValidToken() )
+            profileResponse();
+        else
+            badRequestResponse('Invalid token. Please try again.');
+
     }; break;
+
+    case 'profile/meta/appdata': {
+        //TODO test update cap
+    }
 
     default:
         //not found

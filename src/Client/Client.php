@@ -174,7 +174,7 @@ class Client{
             //default options
             $options = [
                 'headers' => &$this->headers,
-                'timeout' => 7,
+                'timeout' => $this->cfg->getRequestTimeout(),
             ];
 
             if ( $this->token ){
@@ -388,6 +388,9 @@ class Client{
         if( $this->token->isExpired() ) 
             throw new TokenException("Could not initialize the client with expired token. Please generate a new token and try again.");
 
+        //drop the http client
+        $this->HTTPClient = NULL;
+
     }
 
     /**
@@ -421,7 +424,7 @@ class Client{
      * Retrieves the authorization token
      */
     public function authorize(){
-        $this->retrieveToken();
+        $token = $this->retrieveToken(); $this->setToken($token);
     }
 
     /**

@@ -9,30 +9,32 @@ use StudentConnect\API\Client\Client;
 
 class ClientTest extends Codeception\TestCase\Test{
 
-    static $api_endpoint;
-
-    static $app_key;
-    static $app_secret;
-
     /**
      * @var Client|null
      */
-    static $client = NULL;
+    protected static $client = NULL;
 
     /**
-     * @var \Codeception\Extension\PhpBuiltinServer|null
+     * @var \StudentConnect\API\Client\Token|null
      */
-    static $server = NULL;
+    protected static $token = NULL;
 
     public function setUp() {
 
-        self::$api_endpoint = getenv('API_ENDPOINT');
-        self::$app_key      = getenv('APP_KEY');
-        self::$app_secret   = getenv('APP_SECRET');
+        $api_endpoint = getenv('API_ENDPOINT');
+        $app_key      = getenv('APP_KEY');
+        $app_secret   = getenv('APP_SECRET');
 
-        if( empty( self::$client ) )
+        if( empty( static::$client ) ){
+
             //create the client
-            self::$client = new StudentConnect\API\Client\Client(self::$api_endpoint, self::$app_key, self::$app_secret);
+            static::$client = new Client($api_endpoint, $app_key, $app_secret);
+
+
+        }
+
+        if( static::$token )
+            static::$client->setToken( static::$token );
 
         return parent::setUp();
 
@@ -40,19 +42,37 @@ class ClientTest extends Codeception\TestCase\Test{
 
     public function testAuthorization(){
 
-        $expected = 'EKyp4mc3RzmhIeS8L8FQ03NPv68gFT5PgvJKigVrNReH1gITa';
-        $token    = self::$client->getToken();
+        static::$client->authorize();
 
-        $this->assertTrue( ( $expected == $token->getValue() ), "Token value does not match expected value." );
-        
+        $token = static::$client->getToken();
+
+        $this->assertNotEmpty( $token->getValue() );
+
+        static::$token = $token;
+
     }
 
     public function testGetSignInURI(){
-        //TODO...
+
+        $uri = static::$client->generateSignInURI();
+
+        $this->assertNotEmpty($uri);
+
     }
 
     public function testGetProfileData(){
-        //TODO...
+
+        $profile = static::$client->getCurrentProfile();
+
+        $this->assertNotEmpty($profile);
+
+        $this->assertObjectHasAttribute('first_name', $profile);
+        $this->assertObjectHasAttribute('last_name', $profile);
+        $this->assertObjectHasAttribute('birthdate', $profile);
+        $this->assertObjectHasAttribute('email', $profile);
+
+        $this->assertObjectHasAttribute('is_anonymous', $profile);
+
     }
 
 }
