@@ -24,7 +24,7 @@ use StudentConnect\API\Client\Exceptions\ServiceUnavailableException;
 
 class Client{
 
-    const VERSION = '0.2.5';
+    const VERSION = '0.3.6';
 
     const GET     = 'GET';
     const POST    = 'POST';
@@ -119,15 +119,12 @@ class Client{
         $this->cfg = new Configuration($endpoint, $key, $secret);
     }
 
-    public function addLogger(Logger $logger){
-        //TODO...
-    }
-
     /**
      * Generates full URI for an api resource
      * @param $resource
+     * @param array $params
      *
-     * @return mixed
+     * @return string
      */
     protected function uri($resource, $params=[]){
 
