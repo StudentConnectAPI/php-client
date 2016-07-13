@@ -4,9 +4,6 @@
 //auto-loader
 require_once ( __DIR__ . '/../vendor/autoload.php' );
 
-//set timezone
-date_default_timezone_set('UTC');
-
 //setup server host
 $_SERVER['HTTP_HOST'] = 'localhost';
 

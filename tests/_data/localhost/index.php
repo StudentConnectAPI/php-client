@@ -43,7 +43,7 @@ switch ($path){
 
     case 'profile/meta/appdata': {
         //TODO test update capabilities
-    }
+    }; break;
 
     default:
         //not found
