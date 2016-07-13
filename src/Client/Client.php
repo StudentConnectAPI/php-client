@@ -25,11 +25,10 @@ use StudentConnect\API\Client\Exceptions\ServiceUnavailableException;
 
 class Client{
 
-    const VERSION = '0.3.6';
+    const VERSION = '0.4';
 
     const GET     = 'GET';
     const POST    = 'POST';
-    const PUT     = 'PUT';
     const PATCH   = 'PATCH';
     const DELETE  = 'DELETE';
 
@@ -242,17 +241,8 @@ class Client{
                         'form_params' => $data
                     ]);
 
-                case self::PUT:
-                    throw new ClientException("Method not supported."); //not yet implemented
-
-                case self::PATCH:
-                    throw new ClientException("Method not supported."); //not yet implemented
-
-                case self::DELETE:
-                    throw new ClientException("Method not supported."); //not yet implemented
-
                 default:
-                    throw new ClientException("Invalid request method: $method.");
+                    throw new ClientException("Method not supported: $method.");
             }
 
         }

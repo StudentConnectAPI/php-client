@@ -1,10 +1,10 @@
 ## StudentConnect API Client for PHP
 
-This is the PHP Client for StudentConnect API. 
+This is the official PHP client for [StudentConnect API](https://studentconnectapi.com)
  
 ### Installation 
 
-    composer require studentconnect/api-client dev-master
+    composer require studentconnect/api-client
 
 ### Example code
 
@@ -15,21 +15,20 @@ This is the PHP Client for StudentConnect API.
     
     try{
    
-        $Client = new Client('https://api.endpoint', '{application_key}', '{application_secret}');
+        $Client = new Client('https://api.endpoint', '{app_key}', '{app_secret}');
         $Client->authorize();
         
-        $uri = $Client->generateSignInURI();
+        $uri = $Client->tokenizeURI( $Client->generateSignInURI() );
         
-        echo ( '<a href="'. $uri .'" target="_self">Verify your student account &rarr;</a>' );
+        echo ( '<a href="'. $uri .'">Sign In with StudentConnect &rarr;</a>' );
    
     }
     catch(ClientException $e){
         throw new App\ApplicationException( $e->getMessage(), $e->getStatus(), $e );
     }
    
-    
-        
- 
+     
 ### Quickstart
 
 If you have a web server at hand, just set the host's root to /quickstart/web.php and check the guide.   
+Documentation can be found here: [docs.studentconnectapi.com](https://docs.studentconnectapi.com)
