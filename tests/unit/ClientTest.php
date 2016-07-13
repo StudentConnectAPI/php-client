@@ -5,19 +5,41 @@
  * @version 1.0
  */
 
+use Codeception\Lib\Console\Output;
 use StudentConnect\API\Client\Client;
+use \StudentConnect\API\Client\Token;
 
 class ClientTest extends Codeception\TestCase\Test{
 
     /**
      * @var Client|null
      */
-    protected static $client = NULL;
+    protected static $client     = NULL;
 
     /**
-     * @var \StudentConnect\API\Client\Token|null
+     * @var bool
      */
-    protected static $token = NULL;
+    protected static $hasProfile = FALSE;
+
+    /**
+     * @var \Codeception\Lib\Console\Output
+     */
+    protected $console    = NULL;
+
+    protected function __wait( $seconds ){
+
+        //TODO...
+
+        $delay = ceil($seconds/3);
+        $this->console->writeln("Waiting {$delay} seconds ... ");
+        sleep( $delay );
+
+        $delay = ceil($seconds/2 - $delay);
+        $this->console->writeln("Waiting {$delay} seconds ... ");
+        sleep( $delay );
+
+
+    }
 
     public function setUp() {
 
@@ -30,11 +52,11 @@ class ClientTest extends Codeception\TestCase\Test{
             //create the client
             static::$client = new Client($api_endpoint, $app_key, $app_secret);
 
-
         }
 
-        if( static::$token )
-            static::$client->setToken( static::$token );
+        //setup console
+        if( empty($this->console) )
+            $this->console = new \Codeception\Lib\Console\Output([]);
 
         return parent::setUp();
 
@@ -48,8 +70,6 @@ class ClientTest extends Codeception\TestCase\Test{
 
         $this->assertNotEmpty( $token->getValue() );
 
-        static::$token = $token;
-
     }
 
     public function testGetSignInURI(){
@@ -58,20 +78,67 @@ class ClientTest extends Codeception\TestCase\Test{
 
         $this->assertNotEmpty($uri);
 
+        if( 'ON' != getenv('API_MOCK') ){
+
+            //using remote API endpoint
+
+            $delay = ( $d = getenv('SIGNIN_DELAY') ) ? intval($d) : 120;
+
+            $this->console->writeln(PHP_EOL);
+
+            $this->console->writeln("Using remote API endpoint... ");
+            $this->console->writeln("Generated sign in URI: " . self::$client->tokenizeURI($uri) );
+            $this->console->writeln("Follow the URI and grant client access, then come back... ");
+
+            $this->console->writeln("Waiting {$delay} seconds ... ");
+
+            //wait
+            sleep( $delay );
+
+            $this->console->writeln('');
+        }
+
     }
 
     public function testGetProfileData(){
 
         $profile = static::$client->getCurrentProfile();
 
-        $this->assertNotEmpty($profile);
+        if( $profile ){
 
-        $this->assertObjectHasAttribute('first_name', $profile);
-        $this->assertObjectHasAttribute('last_name', $profile);
-        $this->assertObjectHasAttribute('birthdate', $profile);
-        $this->assertObjectHasAttribute('email', $profile);
+            //do we have the anon field
+            $this->assertObjectHasAttribute('is_anonymous', $profile);
 
-        $this->assertObjectHasAttribute('is_anonymous', $profile);
+            self::$hasProfile = TRUE;
+
+            if( $profile->is_anonymous ){
+                //profile is anonymous
+                $this->assertObjectHasAttribute('email', $profile);
+            }
+            else{
+
+                //check for profile data
+
+                $this->assertNotEmpty( $profile );
+
+                $this->assertObjectHasAttribute('first_name', $profile);
+                $this->assertObjectHasAttribute('last_name', $profile);
+                $this->assertObjectHasAttribute('birthdate', $profile);
+                $this->assertObjectHasAttribute('email', $profile);
+                $this->assertObjectHasAttribute('interests', $profile);
+                $this->assertObjectHasAttribute('devices', $profile);
+
+            }
+
+        }
+        else{
+
+            //maybe using remote endpoint
+
+            $this->console->writeln(PHP_EOL);
+            $this->console->writeln("Could not get profile data. Probably you're using a remote endpoint and you haven't signed up yet... .");
+
+        }
 
     }
 

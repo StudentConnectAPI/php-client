@@ -10,6 +10,7 @@ namespace StudentConnect\API\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Client as HTTPClient;
 use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Psr7\Uri;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use StudentConnect\API\Client\Auth\HMAC\Headers;
@@ -491,9 +492,8 @@ class Client{
             'with_token'=> $with_token
         ]);
 
-        if( $signIn ){
+        if( $signIn )
             return $signIn->data->uri;
-        }
 
         return NULL;
 
@@ -574,6 +574,17 @@ class Client{
      */
     public function tokenizeForm($fieldName=self::TOKEN_FIELD){
         $this->tokenField(TRUE, $fieldName);
+    }
+
+    /**
+     * Adds token query to an url
+     * @param $uri
+     * @param string $param
+     *
+     * @return string
+     */
+    public function tokenizeURI($uri, $param=self::TOKEN_FIELD){
+        $uri = new Uri($uri); return $uri->withQuery( http_build_query( [ $param => $this->token->getValue() ] ) )->__toString();
     }
 
     /**

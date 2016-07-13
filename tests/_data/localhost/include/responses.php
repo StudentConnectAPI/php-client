@@ -199,6 +199,9 @@ function profileResponse(){
         'gender'        => 'female',
         'birthdate'     => '1998-04-14',
         'country'       => 'AS',
+        'language'      => 'en',
+        'interests'     => ['entertainment', 'technology', 'facebook'],
+        'devices'       => ['Macbook', 'iPhone 6'],
         'is_anonymous'  => FALSE
     ];
 
@@ -214,4 +217,37 @@ function profileResponse(){
 
     exit();
 
+}
+
+function appDataResponse( $data=[] ){
+
+    $default = [
+        'appId' => ( rand(19000, 234000) . str_shuffle('abcdefghij') ),
+        'user'  => [
+            'login'     => 'app282173@email.com',
+            'password'  => 'sha1:2ac9a6746aca543af8dff39894cfe8173afba21eb01c6fae33d52947222855ef',
+            'prefs'     => [
+                'emoji' => 'yes',
+                'color' => 'A43A34'
+            ]
+        ]
+    ];
+
+    $data = array_merge($default, $data);
+
+    header( $_SERVER['SERVER_PROTOCOL'] . ' 200 OK', TRUE);
+    header('Content-Type: application/json');
+
+    echo json_encode([
+        'code'      => 200,
+        'status'    => 'success',
+        'data'      => $data,
+        'meta'      => [ 'cached' => false ]
+    ]);
+
+    exit();
+}
+
+function appDataPatchResponse(){
+    //TODO add data patch test
 }

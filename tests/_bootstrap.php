@@ -16,9 +16,15 @@ define('DEFAULT_APP_SECRET'     , 'SiGRXRr7Y9bsCrOAC68fZ9OpsKhFp8KmuKpCLZ7TNT');
 
 define('DEFAULT_APP_TOKEN'      , 'EN5C4EcfVS6kaY0HBjAWu2YahmAeLApKPft0Vb8KkuvaqvMrd');
 
+define('DEFAULT_SIGNIN_DELAY', 128); //in seconds
+
 //setup defaults
-if( NULL == getenv('API_ENDPOINT') )
+if( NULL == getenv('API_ENDPOINT') ){
+    putenv('API_MOCK=ON');
     putenv('API_ENDPOINT=' . DEFAULT_API_ENDPOINT);
+}
+else
+    putenv('SIGNIN_DELAY=' . DEFAULT_SIGNIN_DELAY);
 
 if( NULL == getenv('APP_KEY') )
     putenv('APP_KEY=' . DEFAULT_APP_KEY);
