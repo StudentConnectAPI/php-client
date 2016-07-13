@@ -9,3 +9,7 @@ dependencies:
 test:
   override:
     - php vendor/bin/codecept run
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/codeception/
+    - find . -name '*.xml' -exec cp {} $CIRCLE_TEST_REPORTS/codeception/ \;
+    - find ./ -type f -exec sed -i '' 's/class=/classname=/g' {} \;
