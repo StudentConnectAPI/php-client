@@ -1,4 +1,4 @@
-## StudentConnect API Client for PHP
+## StudentConnect API Client for PHP ![build status](https://circleci.com/gh/StudentConnectAPI/php-client.png?circle-token=6686607caa1cef0caa8510ffc5280cef85de6f10)
 
 This is the official PHP client for [StudentConnect API](https://studentconnectapi.com)
  
