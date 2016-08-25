@@ -7,25 +7,24 @@
 
 namespace StudentConnect\API\Client;
 
+use Monolog\Logger;
+use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Client as HTTPClient;
 use GuzzleHttp\Exception\ServerException;
-use GuzzleHttp\Psr7\Uri;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 use StudentConnect\API\Client\Auth\HMAC\Headers;
 use \StudentConnect\API\Client\Auth\HMAC\Settings;
 use StudentConnect\API\Client\Auth\HMAC\Middleware;
 use StudentConnect\API\Client\Auth\HMAC\Request\Signer;
-use StudentConnect\API\Client\Exceptions\AccessDeniedException;
 use StudentConnect\API\Client\Exceptions\TokenException;
 use \StudentConnect\API\Client\Exceptions\ClientException;
+use StudentConnect\API\Client\Exceptions\AccessDeniedException;
 use StudentConnect\API\Client\Exceptions\ResourceNotFoundException;
 use StudentConnect\API\Client\Exceptions\ServiceUnavailableException;
 
 class Client{
 
-    const VERSION = '0.4';
+    const VERSION = '0.5-beta';
 
     const GET     = 'GET';
     const POST    = 'POST';

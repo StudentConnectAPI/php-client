@@ -8,7 +8,7 @@
 
 function getOption($key){
 
-    if( ! $_SESSION )
+    if( ! isset( $_SESSION ) or ! $_SESSION )
         return FALSE;
 
     return ( isset($_SESSION[$key]) ? $_SESSION[$key] : NULL );
@@ -39,9 +39,12 @@ function display($name, $force=FALSE){
             return include $filename;
         }
         catch(\StudentConnect\API\Client\Exceptions\ClientException $e){
+
             show_error( $e->getMessage() );
+
         }
         catch(\Exception $e){
+
             show_error( $e->getMessage() );
         }
 
@@ -87,7 +90,10 @@ function show_error($message, $request=NULL, $response=NULL){
         <?php endif; ?>
     </div>
     <hr style="clear: both;"/>
+
     <?php
+
+    include_once ( __DIR__ . '/ui-bootstrap.php' );
 
     if( ! $Client->hasToken() )
         die(); //fatal error
@@ -128,6 +134,7 @@ function init_client(){
 
         }
         catch(\Exception $e){
+
             show_error( $e->getMessage() );
         }
 

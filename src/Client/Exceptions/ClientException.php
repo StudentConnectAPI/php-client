@@ -36,8 +36,16 @@ class ClientException extends \Exception{
 
     }
 
+    public function getStatus(){
+        return $this->status;
+    }
+
     public function getRequest(){
         return $this->request;
+    }
+
+    public function getResponse(){
+        return $this->responseObj;
     }
 
 }
