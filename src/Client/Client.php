@@ -7,7 +7,6 @@
 
 namespace StudentConnect\API\Client;
 
-use Monolog\Logger;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Client as HTTPClient;
@@ -91,20 +90,18 @@ class Client{
      * @param $key
      * @param $secret
      */
-    public function __construct($endpoint, $key=NULL, $secret=NULL) {
+    public function __construct($endpoint='http://localhost', $key=NULL, $secret=NULL) {
 
-        $this->configure($endpoint, $key, $secret);
+        $this->configure( new Configuration($endpoint, $key, $secret) );
 
     }
 
     /**
      * Configures client
-     * @param $endpoint
-     * @param $key
-     * @param $secret
+     * @param Configuration $configuration
      */
-    public function configure($endpoint, $key, $secret){
-        $this->cfg = new Configuration($endpoint, $key, $secret);
+    public function configure( Configuration $configuration){
+        $this->cfg = $configuration;
     }
 
     /**
@@ -251,6 +248,9 @@ class Client{
 
                 case self::PATCH:
                     return $this->http()->patch($url, [ 'json' => $data ]);
+
+                case self::DELETE:
+                    return $this->http()->delete($url);
 
                 default:
                     throw new ClientException("Method not supported: $method.");
