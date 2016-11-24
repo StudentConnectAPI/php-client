@@ -11,12 +11,12 @@ use Monolog\Logger;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Client as HTTPClient;
-use GuzzleHttp\Exception\ServerException;
 use StudentConnect\API\Client\Auth\HMAC\Headers;
 use \StudentConnect\API\Client\Auth\HMAC\Settings;
 use StudentConnect\API\Client\Auth\HMAC\Middleware;
 use StudentConnect\API\Client\Auth\HMAC\Request\Signer;
 use StudentConnect\API\Client\Exceptions\TokenException;
+use StudentConnect\API\Client\Exceptions\ServerException;
 use \StudentConnect\API\Client\Exceptions\ClientException;
 use StudentConnect\API\Client\Exceptions\AccessDeniedException;
 use StudentConnect\API\Client\Exceptions\ResourceNotFoundException;
@@ -24,7 +24,7 @@ use StudentConnect\API\Client\Exceptions\ServiceUnavailableException;
 
 class Client{
 
-    const VERSION = '0.5-beta';
+    const VERSION = '0.7';
 
     const GET     = 'GET';
     const POST    = 'POST';
@@ -49,12 +49,6 @@ class Client{
      * @var Configuration|null
      */
     protected $cfg  = NULL;
-
-    /**
-     * debug setting
-     * @var bool
-     */
-    protected $debug = FALSE;
 
     /**
      * @var Token|null
@@ -89,11 +83,6 @@ class Client{
      * @var array
      */
     protected $lastRequest = [];
-
-    /**
-     * @var Logger
-     */
-    protected $logger;
 
     /**
      * Creates new Client instance.
@@ -170,33 +159,54 @@ class Client{
 
         if( empty($this->HTTPClient) ){
 
-            //default options
-            $options = [
-                'headers' => &$this->headers,
-                'timeout' => $this->cfg->getRequestTimeout(),
-            ];
+            //init stack
+            $stack = HandlerStack::create();
 
             if ( $this->token ){
 
                 //setup to send the token with each request
-                $this->addHeader(Headers::TOKEN, $this->token->getValue());
+
+                $this->addHeader(Headers::AUTHORIZATION, ( "TOKEN " . $this->token->getValue() ) );
 
             }
             else{
 
                 //setup client to send signed requests
+
                 $signer     = new Signer(Settings::PROVIDER);
                 $middleware = new Middleware($signer, $this->cfg->getKey(), $this->cfg->getSecret());
 
-                $stack = HandlerStack::create();
-                $stack->push($middleware);
+                /*** TAP middleware (for debugging) //TODO
+                $tap = \GuzzleHttp\Middleware::tap(function (Request $request){
 
-                $options['handler'] = $stack;
+                    echo ( $request->getMethod() . $request->getRequestTarget() . "\n" );
+
+                    $headers = $request->getHeaders();
+                    $body    = $request->getBody()->__toString();
+
+                    echo '<pre>';
+
+                    print_r($headers);
+
+                    echo $body;
+
+                    die();
+
+                });
+
+                $stack->push( $tap );
+                ***/
+
+                $stack->push($middleware);
 
             }
 
             //create the client
-            $this->HTTPClient = new HTTPClient($options);
+            $this->HTTPClient = new HTTPClient([
+                'headers' => &$this->headers,
+                'timeout' => $this->cfg->getRequestTimeout(),
+                'handler' => $stack
+            ]);
 
             return $this->HTTPClient;
 
@@ -231,17 +241,20 @@ class Client{
 
         try{
 
-            switch ($method){
+            switch ( $method ){
+
                 case self::GET:
                     return $this->http()->get($url);
 
                 case self::POST:
-                    return $this->http()->post($url, [
-                        'form_params' => $data
-                    ]);
+                    return $this->http()->post($url, [ 'json' => $data ]);
+
+                case self::PATCH:
+                    return $this->http()->patch($url, [ 'json' => $data ]);
 
                 default:
                     throw new ClientException("Method not supported: $method.");
+
             }
 
         }
@@ -267,13 +280,13 @@ class Client{
             throw new ClientException( $e->getMessage(), $e );
 
         }
-        catch (ServerException $e){
+        catch (\GuzzleHttp\Exception\ServerException $e){
 
             //the error is on the API side
 
             $this->rawResponse = $e->getResponse()->getBody()->__toString();
 
-            throw new ServiceUnavailableException( $e->getMessage(), $e );
+            throw new ServerException( $e->getMessage(), $e );
 
         }
 
@@ -304,7 +317,7 @@ class Client{
                 throw new ClientException("{$obj->code} Error: {$obj->message}");
         }
 
-        throw new ClientException("Invalid response from the API for resource {$resource}.");
+        throw new ServerE("Invalid response from the API for resource {$resource}.");
 
     }
 
@@ -354,10 +367,18 @@ class Client{
 
     }
 
+    /**
+     * Returns details of the last request
+     * @return array
+     */
     public function getLastRequestDetails(){
         return $this->lastRequest;
     }
 
+    /**
+     * Retrieve current token
+     * @return null|Token
+     */
     public function retrieveToken(){
 
         $this->token = $this->getToken();

@@ -8,5 +8,8 @@
 namespace StudentConnect\API\Client\Exceptions;
 
 
-class ResourceNotFoundException extends ClientException{
+class ResourceNotFoundException extends HttpException {
+
+    protected $status = 404;
+
 }

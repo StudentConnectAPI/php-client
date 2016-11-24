@@ -8,6 +8,8 @@
 namespace StudentConnect\API\Client\Exceptions;
 
 
-class ServiceUnavailableException extends ClientException{
+class ServiceUnavailableException extends HttpException {
+
+    protected $status = 503;
 
 }

@@ -7,11 +7,23 @@
 
 namespace StudentConnect\API\Client;
 
+use Monolog\Logger;
 use StudentConnect\API\Client\Auth\HMAC\Settings;
 
 class Configuration extends Settings{
 
+    /**
+     * Request timeout
+     * @var int
+     */
     protected $requestTimeout = 7;
+
+
+    /**
+     * Monolog logger
+     * @var Logger|null
+     */
+    protected $logger = NULL;
 
     /**
      * Configuration constructor.
@@ -48,4 +60,19 @@ class Configuration extends Settings{
         return $this->requestTimeout;
     }
 
+    /**
+     * Set logger
+     * @param Logger $logger
+     */
+    public function setLogger(Logger $logger){
+        $this->logger = $logger;
+    }
+
+    /**
+     * Get logger
+     * @return Logger|null
+     */
+    public function getLogger(){
+        return $this->logger;
+    }
 }

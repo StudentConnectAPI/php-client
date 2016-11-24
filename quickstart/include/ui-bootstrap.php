@@ -19,6 +19,7 @@
         font-family: "Lato", "Helvetica Neue", Helvetica, Arial sans-serif;
         font-size: 16px;
         background: #f5f5f5;
+        opacity: 0;
     }
 
     .wrapper{
@@ -214,8 +215,10 @@
             padding-bottom: 10px;
             padding-top: 10px;
         }
+
     }
 </style>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
 <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript">document.body.style.opacity = 1;</script>

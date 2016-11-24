@@ -7,5 +7,7 @@
 
 namespace StudentConnect\API\Client\Exceptions;
 
-class TokenException extends \Exception{
+
+class TokenException extends \Exception {
+
 }
