@@ -307,6 +307,12 @@ class Client{
 
                 //successful request
 
+                if( ! isset($obj->data) )
+                    $obj->data = new \stdClass();
+
+                if( ! isset($obj->meta) )
+                    $obj->meta = new \stdClass();
+
                 $this->data = isset($obj->data) ? $obj->data : new \stdClass();
                 $this->meta = isset($obj->meta) ? $obj->meta : new \stdClass();
 
@@ -317,7 +323,7 @@ class Client{
                 throw new ClientException("{$obj->code} Error: {$obj->message}");
         }
 
-        throw new ServerE("Invalid response from the API for resource {$resource}.");
+        throw new ServiceUnavailableException("Invalid response from the API for resource {$resource}.");
 
     }
 
