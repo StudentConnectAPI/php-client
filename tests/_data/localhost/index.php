@@ -9,11 +9,17 @@
 require_once ( __DIR__ . '/../../../vendor/autoload.php' );
 require_once ( __DIR__ . '/include/responses.php' );
 
-$path = trim($_SERVER['REQUEST_URI'], '/');
+$data   = [];
+$method = $_SERVER['REQUEST_METHOD'];
+$path   = trim($_SERVER['REQUEST_URI'], '/');
+
+if( in_array($method, ['POST', 'PATCH']) )
+    $data = json_decode( @file_get_contents('php://input'), TRUE );
 
 //return response depending on path
 switch ($path){
 
+    //authorize
     case 'authorize': {
 
         if( isValidSignature() )
@@ -23,6 +29,7 @@ switch ($path){
 
     }; break;
 
+    //signin
     case 'signin': {
 
         if( hasValidToken() )
@@ -32,6 +39,7 @@ switch ($path){
 
     }; break;
 
+    //profile
     case 'profile': {
 
         if( hasValidToken() )
@@ -41,8 +49,38 @@ switch ($path){
 
     }; break;
 
-    case 'profile/meta/appdata': {
-        //TODO test update capabilities
+    //token
+    case 'token': {
+
+        if( hasValidToken() )
+            tokenResponse();
+        else
+            badRequestResponse('Invalid token. Please try again.');
+
+    }; break;
+
+    //client
+    case 'client': {
+
+        if( hasValidToken() )
+            clientResponse();
+        else
+            badRequestResponse('Invalid token. Please try again.');
+
+    }; break;
+
+    //profile/meta
+    case 'profile/meta': {
+        profileMetaResponse($data);
+    }; break;
+
+    //profile/payments/requests
+    case 'profile/payments/requests': {
+        profilePaymentsRequestsResponse($data, $method);
+    }; break;
+
+    case ('profile/payments/requests/' . \Settings::paymentRequestId ) : {
+        profilePaymentsRequestsResponse($data, $method);
     }; break;
 
     default:

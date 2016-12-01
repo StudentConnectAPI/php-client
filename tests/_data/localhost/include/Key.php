@@ -1,6 +1,6 @@
 <?php
 /**
- * StudentConnect API Client - [file description]
+ * StudentConnect API Client - KeyInterface
  * @author adrian7 (adrian@studentmoneysaver.co.uk)
  * @version 1.0
  */
@@ -9,7 +9,7 @@ require_once ( __DIR__ . '/../../../../vendor/autoload.php' );
 
 class Key implements \Acquia\Hmac\KeyInterface{
 
-    protected $key     = NULL;
+    protected $key    = NULL;
     protected $secret = NULL;
 
     public function __construct() {

@@ -1,13 +1,12 @@
 <?php
 /**
- * StudentConnect API Client - [file description]
+ * StudentConnect API Client - API Client Test
  * @author adrian7 (adrian@studentmoneysaver.co.uk)
  * @version 1.0
  */
 
-use Codeception\Lib\Console\Output;
+use \Settings;
 use StudentConnect\API\Client\Client;
-use \StudentConnect\API\Client\Token;
 
 class ClientTest extends Codeception\TestCase\Test{
 
@@ -26,26 +25,21 @@ class ClientTest extends Codeception\TestCase\Test{
      */
     protected $console    = NULL;
 
-    protected function __wait( $seconds ){
-
-        //TODO...
-
-        $delay = ceil($seconds/3);
-        $this->console->writeln("Waiting {$delay} seconds ... ");
-        sleep( $delay );
-
-        $delay = ceil($seconds/2 - $delay);
-        $this->console->writeln("Waiting {$delay} seconds ... ");
-        sleep( $delay );
-
-
-    }
+    private $canGetProfileMeta        = FALSE;
+    private $canPatchProfileMeta      = FALSE;
+    private $canCreatePaymentRequests = FALSE;
+    private $canListPaymentsRequests  = FALSE;
+    private $canDeletePaymentsRequests= FALSE;
 
     public function setUp() {
 
         $api_endpoint = getenv('API_ENDPOINT');
         $app_key      = getenv('APP_KEY');
         $app_secret   = getenv('APP_SECRET');
+
+        if( empty($api_endpoint) )
+            //invalid api endpoint
+            throw new \InvalidArgumentException("Missing API_ENDPOINT env variable.");
 
         if( empty( static::$client ) ){
 
@@ -100,9 +94,11 @@ class ClientTest extends Codeception\TestCase\Test{
 
     }
 
-    public function testGetProfileData(){
+    public function testGetProfile(){
 
         $profile = static::$client->getCurrentProfile();
+
+        $this->assertTrue( is_object( $profile ) );
 
         if( $profile ){
 
@@ -121,12 +117,12 @@ class ClientTest extends Codeception\TestCase\Test{
 
                 $this->assertNotEmpty( $profile );
 
+                $this->assertObjectHasAttribute('_id', $profile);
                 $this->assertObjectHasAttribute('first_name', $profile);
                 $this->assertObjectHasAttribute('last_name', $profile);
                 $this->assertObjectHasAttribute('birthdate', $profile);
+                $this->assertObjectHasAttribute('gender', $profile);
                 $this->assertObjectHasAttribute('email', $profile);
-                $this->assertObjectHasAttribute('interests', $profile);
-                $this->assertObjectHasAttribute('devices', $profile);
 
             }
 
@@ -137,6 +133,115 @@ class ClientTest extends Codeception\TestCase\Test{
 
             $this->console->writeln(PHP_EOL);
             $this->console->writeln("Could not get profile data. Probably you're using a remote endpoint and you haven't signed up yet... .");
+
+        }
+
+    }
+
+    public function testGetClient(){
+
+        $client = static::$client->get('/client');
+
+        $this->assertNotEmpty( $client );
+        $this->assertTrue( is_object( $client ) );
+
+        $this->assertObjectHasAttribute('_id', $client);
+        $this->assertObjectHasAttribute('organization', $client);
+        $this->assertObjectHasAttribute('permissions', $client);
+
+    }
+
+    public function testTokenPermissions(){
+
+        $token = static::$client->get('token');
+
+        $this->assertNotEmpty( $token );
+        $this->assertTrue( is_object( $token ) );
+
+        $this->assertObjectHasAttribute('permissions', $token);
+
+        if( $permissions = $token->permissions )
+            foreach ($permissions as $path=>$fields){
+
+                $method = trim( substr($path, 0, strpos($path, '/') ) );
+                $path   = str_replace($method, '', $path);
+
+                if( $path == '/profile/meta' and 'GET' == $method )
+                    $this->canGetProfileMeta = TRUE;
+
+                if( $path == '/profile/meta' and 'PATCH' == $method )
+                    $this->canPatchProfileMeta = TRUE;
+
+                if( $path == '/profile/payments/requests' and 'POST' == $method )
+                    $this->canCreatePaymentRequests = TRUE;
+
+                if( $path == '/profile/payments/requests' and 'GET' == $method )
+                    $this->canListPaymentsRequests = TRUE;
+
+                if( $path == '/profile/payments/requests' and 'DELETE' == $method )
+                    $this->canDeletePaymentsRequests = TRUE;
+
+            }
+
+        //test allowed permissions one by one
+
+        if( $this->canPatchProfileMeta ){
+
+            $meta = [ 'contact_email' => Settings::profileMetaContactEmail ];
+
+            $profile = self::$client->patch('/profile/meta', $meta);
+
+            $this->assertTrue(is_object($profile));
+
+            $this->assertObjectHasAttribute('_id', $profile);
+            $this->assertObjectHasAttribute('email', $profile);
+
+        }
+
+        if( $this->canGetProfileMeta ){
+
+            $meta = self::$client->get('/profile/meta');
+
+            $this->assertTrue( is_object($meta) );
+            $this->assertObjectHasAttribute('contact_email', $meta);
+            $this->assertTrue(Settings::profileMetaContactEmail == $meta->contact_email, "Profile metadata contact email does not match expected string.");
+
+        }
+
+        if( $this->canCreatePaymentRequests ){
+
+            $request = self::$client->post('/profile/payments/requests', [
+                'amount' => Settings::paymentRequestAmount
+            ]);
+
+            $this->assertTrue( is_object($request) );
+            $this->assertObjectHasAttribute( 'currency', $request );
+            $this->assertObjectHasAttribute( 'payprofile_id', $request );
+            $this->assertObjectHasAttribute( 'user_id', $request );
+            $this->assertObjectHasAttribute( 'amount', $request );
+
+            $this->assertTrue(( Settings::paymentRequestAmount == $request->amount ), "Payment request created with wrong amount!");
+
+        }
+
+        if( $this->canListPaymentsRequests ){
+
+            $requests = self::$client->get('/profile/payments/requests');
+            $request  = isset($requests[0]) ? $requests[0] : NULL;
+
+            $this->assertTrue( is_object($request) );
+            $this->assertObjectHasAttribute( 'currency', $request );
+            $this->assertObjectHasAttribute( 'payprofile_id', $request );
+            $this->assertObjectHasAttribute( 'user_id', $request );
+            $this->assertObjectHasAttribute( 'amount', $request );
+
+        }
+
+        if( $this->canDeletePaymentsRequests ){
+
+            $requestId = $request->_id;
+
+            self::$client->delete( '/profile/payments/requests/' . $requestId );
 
         }
 

@@ -15,16 +15,25 @@ use \StudentConnect\API\Client\Auth\HMAC\Settings;
 use Acquia\Hmac\Request\Symfony as RequestWrapper;
 use StudentConnect\API\Client\Auth\HMAC\Request\Signer;
 
-/**Validates expected application token
+/**
+ * Validates expected application token
  * @return bool
  */
 function hasValidToken(){
 
     $expected = getenv('APP_TOKEN');
 
-    //check for X-Token header
-    $header = isset($_SERVER['HTTP_X_TOKEN']) ? $_SERVER['HTTP_X_TOKEN'] : NULL;
-    $token  = $header ? trim($header) : NULL;
+    //check for Authorization header
+    $header = trim( $_SERVER['HTTP_AUTHORIZATION'] );
+    $token  = trim( str_replace('TOKEN ', '', $header) );
+
+    if( empty($token) and isset($_SERVER['HTTP_X_TOKEN'])){
+
+        //check for X-Token header
+        $header = isset($_SERVER['HTTP_X_TOKEN']) ? $_SERVER['HTTP_X_TOKEN'] : NULL;
+        $token  = $header ? trim($header) : NULL;
+
+    }
 
     return ( $expected == $token ) ? TRUE : FALSE;
 
@@ -78,80 +87,24 @@ function badRequestResponse( $message = 'Something went wrong... .' ){
 
 }
 
-function authorizeResponse(){
+function __successResponse($data=[], $meta=['cached'=>FALSE], $message='Resource available'){
 
-    $now   = time();
-    $token = getenv('APP_TOKEN');
+    header( $_SERVER['SERVER_PROTOCOL'] . ' 200 OK', TRUE);
+    header('Content-Type: application/json');
 
-    //token permissions
-    $permissions = [
+    echo json_encode([
+        'code'      => 201,
+        'status'    => 'success',
+        'message'   => $message,
+        'data'      => $data,
+        'meta'      => $meta
+    ]);
 
-        'GET/'              => '*',
-        'GET/token'         => '*',
+    exit();
 
-        'GET/client'        => [
-            'username',
-            'organization',
-            'logo',
-            'domain',
-            'labels'
-        ],
+}
 
-        'GET/signin'        => '*',
-
-        'GET/profile'       => [
-            'email',
-            'connect_id',
-            'avatar',
-            'first_name',
-            'last_name',
-            'birthdate',
-            'country',
-            'language',
-            'address'
-        ],
-
-        'POST/signin'           => '*',
-        'POST/tokens'           => '*',
-        'POST/authorize'        => '*',
-
-        'GET/client/meta'       => [
-            'ui',
-            'endpoints'
-        ],
-
-        'GET/institutions'      => [
-            'entity_id',
-            'logo',
-            'name',
-            'web_domain'
-        ],
-
-        'GET/profile/meta'      => [
-            'emails',
-            'phones'
-        ],
-
-        'GET/institutions/meta'     => [
-            'logos',
-            'names'
-        ],
-
-        'GET/profile/affiliations' => [
-            'affiliation',
-            'course',
-            'graduation_year'
-        ]
-    ];
-
-    //response data
-    $data = [
-        'token'         => $token,
-        'permissions'   => $permissions,
-        'is_ephemeral'  => TRUE,
-        'created_at'    => $now,
-        'expires_at'    => ( $now+ 86400 ),
-    ];
+function __createdResponse($data=[], $meta=['cached'=>FALSE]){
 
     header( $_SERVER['SERVER_PROTOCOL'] . ' 201 Created', TRUE);
     header('Content-Type: application/json');
@@ -159,39 +112,88 @@ function authorizeResponse(){
     echo json_encode([
         'code'      => 201,
         'status'    => 'success',
+        'message'   => 'Resource created',
         'data'      => $data,
-        'meta'      => [ 'cached' => false ]
+        'meta'      => $meta
     ]);
 
     exit();
+
 }
 
+function __updatedResponse($data=[], $meta=['cached'=>FALSE]){
+    __successResponse($data, $meta, 'Resource updated');
+}
+
+function __deletedResponse(){
+
+    header( $_SERVER['SERVER_PROTOCOL'] . ' 202 Accepted', TRUE);
+    header('Content-Type: application/json');
+
+    echo json_encode([
+        'code'      => 202,
+        'status'    => 'success',
+        'message'   => 'Resource deleted'
+    ]);
+
+    exit();
+
+}
+
+/**
+ * Mocks the /authorize response
+ */
+function authorizeResponse(){
+
+    $now   = time();
+    $token = getenv('APP_TOKEN');
+
+    //token permissions
+    $permissions = [
+        'GET/'                      => '*',
+        'GET/token'                 => '*',
+        'GET/client'                => '*',
+        'GET/signin'                => '*',
+        'GET/profile'               => '*',
+        'POST/signin'               => '*',
+        'POST/tokens'               => '*',
+        'POST/authorize'            => '*',
+        'GET/client/meta'           => '*',
+        'GET/institutions'          => '*',
+        'GET/profile/meta'          => '*',
+        'GET/institutions/meta'     => '*',
+        'GET/profile/affiliations'  => '*'
+    ];
+
+    __createdResponse([
+        'token'         => $token,
+        'permissions'   => $permissions,
+        'is_ephemeral'  => TRUE,
+        'created_at'    => $now,
+        'expires_at'    => ( $now+ 86400 ),
+    ]);
+}
+
+/**
+ * Mocks the /signin response
+ */
 function signinResponse(){
 
-    $data = [
+    __createdResponse([
         'endpoint'   => 'https://signup.endpoint',
         'method'     => 'default',
         'uri'        => 'https://signup.endpoint/launch',
         'with_token' => FALSE
-    ];
-
-    header( $_SERVER['SERVER_PROTOCOL'] . ' 200 OK', TRUE);
-    header('Content-Type: application/json');
-
-    echo json_encode([
-        'code'      => 200,
-        'status'    => 'success',
-        'data'      => $data,
-        'meta'      => [ 'cached' => false ]
     ]);
-
-    exit();
 
 }
 
+/**
+ * Mocks the /profile response
+ */
 function profileResponse(){
 
-    $data = [
+    __successResponse([
         '_id'           => rand(19000, 234000),
         'email'         => 'someone@email.com',
         'first_name'    => 'Sabrina',
@@ -200,26 +202,68 @@ function profileResponse(){
         'birthdate'     => '1998-04-14',
         'country'       => 'AS',
         'language'      => 'en',
-        'interests'     => ['entertainment', 'technology', 'facebook'],
-        'devices'       => ['Macbook', 'iPhone 6'],
         'is_anonymous'  => FALSE
-    ];
-
-    header( $_SERVER['SERVER_PROTOCOL'] . ' 200 OK', TRUE);
-    header('Content-Type: application/json');
-
-    echo json_encode([
-        'code'      => 200,
-        'status'    => 'success',
-        'data'      => $data,
-        'meta'      => [ 'cached' => false ]
     ]);
-
-    exit();
 
 }
 
-function appDataResponse( $data=[] ){
+/**
+ * Mocks /client response
+ */
+function clientResponse(){
+
+    __successResponse([
+        '_id'           => rand(19000, 234000),
+        'username'      => 'client-organization',
+        'organization'  => 'Organization Inc.',
+        'permissions'   => [
+            'GET/'  =>  '*',
+            'POST/authorize'  =>  '*',
+            'GET/token'  =>  '*',
+            'GET/client'  =>  '*',
+            'GET/profile'  =>  '*',
+            'GET/profile/meta/appdata'  =>  '*',
+            'POST/profile/meta/appdata'  =>  '*',
+            'PATCH/profile/meta/appdata'  =>  '*'
+        ]
+    ]);
+
+}
+
+/**
+ * Mocks /token response
+ */
+function tokenResponse(){
+
+    __successResponse([
+        '_id'        => rand(19000, 234000),
+        'client_id'  => rand(19000, 234000),
+        'user_id'    => rand(19000, 234000),
+        'value'      => getenv('APP_TOKEN'),
+        'granted'    => TRUE,
+        'expires_at' => time()+ 86400,
+        'created_at' => time(),
+        'updated_at' => time(),
+
+        'permissions'=> [
+            'GET/'  =>  '*',
+            'POST/authorize'  =>  '*',
+            'GET/token'  =>  '*',
+            'GET/client'  =>  '*',
+            'GET/profile'  =>  '*',
+            'GET/profile/meta'  =>  '*',
+            'PATCH/profile/meta'  =>  '*',
+            'POST/profile/payments/requests'  =>  '*',
+        ]
+    ]);
+
+}
+
+/**
+ * Mocks /profile/meta response
+ * @param array $data
+ */
+function profileMetaResponse( $data=[] ){
 
     $default = [
         'appId' => ( rand(19000, 234000) . str_shuffle('abcdefghij') ),
@@ -233,21 +277,46 @@ function appDataResponse( $data=[] ){
         ]
     ];
 
-    $data = array_merge($default, $data);
+    if( empty($data) )
+        //GET response
+        __successResponse( array_merge($default, [ 'contact_email' => \Settings::profileMetaContactEmail ]) );
 
-    header( $_SERVER['SERVER_PROTOCOL'] . ' 200 OK', TRUE);
-    header('Content-Type: application/json');
+    else
+        //PATCH response
+        profileResponse();
 
-    echo json_encode([
-        'code'      => 200,
-        'status'    => 'success',
-        'data'      => $data,
-        'meta'      => [ 'cached' => false ]
-    ]);
-
-    exit();
 }
 
-function appDataPatchResponse(){
-    //TODO add data patch test
+/**
+ * Mocks /profile/payments/requests
+ * @param array $data
+ * @param $method
+ */
+function profilePaymentsRequestsResponse( $data=[], $method='GET' ){
+
+    $default = [
+        '_id'           => \Settings::paymentRequestId,
+        'user_id'       => rand(19000, 234000),
+        'payprofile_id' => rand(19000, 234000),
+        'amount'        => 17.95,
+        'currency'      => 'GBP',
+        'locked'        => FALSE,
+        'processed'     => FALSE
+    ];
+
+    if( empty($data) )
+        //GET response
+        __successResponse( [$default] );
+    else{
+
+        if( 'POST' == $method )
+            //POST response
+            __createdResponse( array_merge($default, $data) );
+
+        if( 'DELETE' == $method )
+            //DELETE response
+            __deletedResponse();
+
+    }
+
 }
