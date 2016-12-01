@@ -7,9 +7,11 @@
 
 namespace StudentConnect\API\Client;
 
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Client as HTTPClient;
+use Monolog\Logger;
 use StudentConnect\API\Client\Auth\HMAC\Headers;
 use \StudentConnect\API\Client\Auth\HMAC\Settings;
 use StudentConnect\API\Client\Auth\HMAC\Middleware;
@@ -23,7 +25,7 @@ use StudentConnect\API\Client\Exceptions\ServiceUnavailableException;
 
 class Client{
 
-    const VERSION = '0.7';
+    const VERSION = '0.8';
 
     const GET     = 'GET';
     const POST    = 'POST';
@@ -159,6 +161,30 @@ class Client{
             //init stack
             $stack = HandlerStack::create();
 
+            //add debug middleware stack
+            if( $logger = $this->cfg->getLogger() ){
+
+                $tap = \GuzzleHttp\Middleware::tap(function (Request $request) use ($logger){
+
+                    $line   = $request->getMethod() . $request->getRequestTarget();
+
+                    $method = $request->getMethod();
+                    $target = $request->getRequestTarget();
+                    $headers= $request->getHeaders();
+                    $body   = $request->getBody()->__toString();
+
+                    $logger->log(Logger::DEBUG, "Sending {$method} request to {$target} ...");
+
+                    $logger->log(Logger::DEBUG, "{$line}");
+                    $logger->log(Logger::DEBUG, print_r($headers, 1));
+                    $logger->log(Logger::DEBUG, $body);
+
+                });
+
+                $stack->push( $tap );
+
+            }
+
             if ( $this->token ){
 
                 //setup to send the token with each request
@@ -172,27 +198,6 @@ class Client{
 
                 $signer     = new Signer(Settings::PROVIDER);
                 $middleware = new Middleware($signer, $this->cfg->getKey(), $this->cfg->getSecret());
-
-                /*** TAP middleware (for debugging) //TODO
-                $tap = \GuzzleHttp\Middleware::tap(function (Request $request){
-
-                    echo ( $request->getMethod() . $request->getRequestTarget() . "\n" );
-
-                    $headers = $request->getHeaders();
-                    $body    = $request->getBody()->__toString();
-
-                    echo '<pre>';
-
-                    print_r($headers);
-
-                    echo $body;
-
-                    die();
-
-                });
-
-                $stack->push( $tap );
-                ***/
 
                 $stack->push($middleware);
 
@@ -308,10 +313,10 @@ class Client{
                 //successful request
 
                 if( ! isset($obj->data) )
-                    $obj->data = new \stdClass();
+                    $obj->data = NULL;
 
                 if( ! isset($obj->meta) )
-                    $obj->meta = new \stdClass();
+                    $obj->meta = NULL;
 
                 $this->data = isset($obj->data) ? $obj->data : new \stdClass();
                 $this->meta = isset($obj->meta) ? $obj->meta : new \stdClass();
@@ -616,7 +621,7 @@ class Client{
 
         $response = $this->asObj($resource, $using, $with);
 
-        return $response->data;
+        return isset($response->data) ? $response->data : NULL;
 
     }
 
