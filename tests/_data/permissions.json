@@ -1,0 +1,15 @@
+{
+  "GET/": "*",
+  "GET/token": "*",
+  "GET/signin": "*",
+  "GET/client": "*",
+  "GET/profile": "*",
+  "GET/profile/meta": "*",
+  "GET/profile/payments/requests": "*",
+  "GET/profile/payments/requests/*": "*",
+  "POST/authorize": "*",
+  "POST/signin": "*",
+  "POST/profile/payments/requests": "*",
+  "PATCH/profile/meta": "*",
+  "DELETE/profile/payments/requests/*": "*"
+}

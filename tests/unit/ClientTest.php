@@ -81,7 +81,7 @@ class ClientTest extends Codeception\TestCase\Test{
             $this->console->writeln(PHP_EOL);
 
             $this->console->writeln("Using remote API endpoint... ");
-            $this->console->writeln("Generated sign in URI: " . self::$client->tokenizeURI($uri) );
+            $this->console->writeln("Generated sign in URI: \n" . self::$client->tokenizeURI($uri) );
             $this->console->writeln("Follow the URI and grant client access, then come back... ");
 
             $this->console->writeln("Waiting {$delay} seconds ... ");
@@ -198,7 +198,7 @@ class ClientTest extends Codeception\TestCase\Test{
 
         }
 
-        if( $this->canGetProfileMeta ){
+        if( $this->canPatchProfileMeta and $this->canGetProfileMeta ){
 
             $meta = self::$client->get('/profile/meta');
 
@@ -224,7 +224,7 @@ class ClientTest extends Codeception\TestCase\Test{
 
         }
 
-        if( $this->canListPaymentsRequests ){
+        if( $this->canCreatePaymentRequests and $this->canListPaymentsRequests ){
 
             $requests = self::$client->get('/profile/payments/requests');
             $request  = isset($requests[0]) ? $requests[0] : NULL;
@@ -237,7 +237,7 @@ class ClientTest extends Codeception\TestCase\Test{
 
         }
 
-        if( $this->canDeletePaymentsRequests ){
+        if( $this->canListPaymentsRequests and $this->canDeletePaymentsRequests ){
 
             $requestId = $request->_id;
 

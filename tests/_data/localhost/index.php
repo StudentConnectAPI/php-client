@@ -79,7 +79,7 @@ switch ($path){
         profilePaymentsRequestsResponse($data, $method);
     }; break;
 
-    case ('profile/payments/requests/' . \Settings::paymentRequestId ) : {
+    case ( 'profile/payments/requests/' . \Settings::paymentRequestId ) : {
         profilePaymentsRequestsResponse($data, $method);
     }; break;
 
