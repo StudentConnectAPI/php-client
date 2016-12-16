@@ -16,7 +16,12 @@ $endpoints = [
 ];
 
 if( file_exists( $external ) )
-    $endpoints = array_merge($endpoints, @explode("\n", @file_get_contents($external)))
+    $endpoints = array_merge($endpoints, @explode("\n", @file_get_contents($external)) );
+
+if( $default = getenv('API_ENDPOINT') )
+    $default_endpoint = $default;
+else
+    $default_endpoint = ( ( isset($endpoint) and count($endpoints) ) ? $endpoints[0] : 'https://studentconnect.api' );
 
 ?>
 
@@ -27,19 +32,14 @@ if( file_exists( $external ) )
             <div class="form-group">
                 <label for="api_endpoint" class="col-sm-2 control-label">Endpoint:</label>
                 <div class="col-sm-10">
-                    <div class="input-group">
-                        <select class="form-control input-lg" id="api_endpoint" name="api_endpoint">
-
-                            <?php if( $default = getenv('API_ENDPOINT') ): ?>
-                                <option selected><?php echo $default; ?></option>
-                            <?php endif; ?>
-
-                            <?php foreach ($endpoints as $endpoint): ?>
-                                    <option><?php echo $endpoint; ?></option>
-                            <?php endforeach; ?>
-
-                        </select>
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control input-lg" id="api_endpoint" list="api_endpoints" name="api_endpoint" value="<?php echo $default_endpoint; ?>" placeholder="https://studentconnect.api"/>
                         <span class="input-group-addon"><a href="#endpoint" onclick="window.open(document.getElementById('api_endpoint').value);" target="_blank"><i class="fa fa-external-link"></i></a></span>
+                        <datalist id="api_endpoints">
+                            <?php foreach ($endpoints as $endpoint): ?>
+                                <option><?php echo $endpoint; ?></option>
+                            <?php endforeach; ?>
+                        </datalist>
                     </div>
                 </div>
             </div>
