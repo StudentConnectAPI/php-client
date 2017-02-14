@@ -6,6 +6,8 @@
  * @version 1.0
  */
 
+date_default_timezone_set('UTC');
+
 require_once (__DIR__ . '/../vendor/autoload.php');
 
 use \StudentConnect\API\Client\Token;
@@ -108,6 +110,8 @@ switch ($command){
                 echo ( "Gender: {$profile->gender} \n\n");
 
             }
+            else
+                echo ( "\n\n(i) No profile associated with token... . \n");
 
         }
         catch (Exception $e){

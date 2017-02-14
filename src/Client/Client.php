@@ -7,11 +7,11 @@
 
 namespace StudentConnect\API\Client;
 
-use GuzzleHttp\Psr7\Request;
+use Monolog\Logger;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client as HTTPClient;
-use Monolog\Logger;
 use StudentConnect\API\Client\Auth\HMAC\Headers;
 use \StudentConnect\API\Client\Auth\HMAC\Settings;
 use StudentConnect\API\Client\Auth\HMAC\Middleware;

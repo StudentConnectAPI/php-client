@@ -4,6 +4,7 @@
   "GET/signin": "*",
   "GET/client": "*",
   "GET/profile": "*",
+  "GET/profile/cashback": "*",
   "GET/profile/meta": "*",
   "GET/profile/payments/requests": "*",
   "GET/profile/payments/requests/*": "*",

@@ -25,6 +25,7 @@ class ClientTest extends Codeception\TestCase\Test{
      */
     protected $console    = NULL;
 
+    private $canGetProfileCashback    = FALSE;
     private $canGetProfileMeta        = FALSE;
     private $canPatchProfileMeta      = FALSE;
     private $canCreatePaymentRequests = FALSE;
@@ -166,6 +167,9 @@ class ClientTest extends Codeception\TestCase\Test{
                 $method = trim( substr($path, 0, strpos($path, '/') ) );
                 $path   = str_replace($method, '', $path);
 
+                if( $path == '/profile/cashback' and 'GET' == $method )
+                    $this->canGetProfileCashback = TRUE;
+
                 if( $path == '/profile/meta' and 'GET' == $method )
                     $this->canGetProfileMeta = TRUE;
 
@@ -208,40 +212,54 @@ class ClientTest extends Codeception\TestCase\Test{
 
         }
 
-        if( $this->canCreatePaymentRequests ){
+        if( $this->canGetProfileCashback ){
 
-            $request = self::$client->post('/profile/payments/requests', [
-                'amount' => Settings::paymentRequestAmount
-            ]);
+            $amounts = self::$client->get('/profile/cashback');
 
-            $this->assertTrue( is_object($request) );
-            $this->assertObjectHasAttribute( 'currency', $request );
-            $this->assertObjectHasAttribute( 'payprofile_id', $request );
-            $this->assertObjectHasAttribute( 'user_id', $request );
-            $this->assertObjectHasAttribute( 'amount', $request );
+            $this->assertObjectHasAttribute('available', $amounts, "Profile cachback missing available amount");
 
-            $this->assertTrue(( Settings::paymentRequestAmount == $request->amount ), "Payment request created with wrong amount!");
+            if( 0.1 < ( $amounts->available -1 ) ){
 
-        }
+                if( $this->canCreatePaymentRequests ){
 
-        if( $this->canCreatePaymentRequests and $this->canListPaymentsRequests ){
+                    $request = self::$client->post('/profile/payments/requests', [
+                        'amount' => ( $amounts->available -1 )
+                    ]);
 
-            $requests = self::$client->get('/profile/payments/requests');
-            $request  = isset($requests[0]) ? $requests[0] : NULL;
+                    $this->assertTrue( is_object($request) );
+                    $this->assertObjectHasAttribute( 'currency', $request );
+                    $this->assertObjectHasAttribute( 'payprofile_id', $request );
+                    $this->assertObjectHasAttribute( 'user_id', $request );
+                    $this->assertObjectHasAttribute( 'amount', $request );
 
-            $this->assertTrue( is_object($request) );
-            $this->assertObjectHasAttribute( 'currency', $request );
-            $this->assertObjectHasAttribute( 'payprofile_id', $request );
-            $this->assertObjectHasAttribute( 'user_id', $request );
-            $this->assertObjectHasAttribute( 'amount', $request );
+                    $this->assertTrue(( Settings::paymentRequestAmount == $request->amount ), "Payment request created with wrong amount!");
 
-        }
+                }
 
-        if( $this->canListPaymentsRequests and $this->canDeletePaymentsRequests ){
+                if( $this->canCreatePaymentRequests and $this->canListPaymentsRequests ){
 
-            $requestId = $request->_id;
+                    $requests = self::$client->get('/profile/payments/requests');
+                    $request  = isset($requests[0]) ? $requests[0] : NULL;
 
-            self::$client->delete( '/profile/payments/requests/' . $requestId );
+                    $this->assertTrue( is_object($request) );
+                    $this->assertObjectHasAttribute( 'currency', $request );
+                    $this->assertObjectHasAttribute( 'payprofile_id', $request );
+                    $this->assertObjectHasAttribute( 'user_id', $request );
+                    $this->assertObjectHasAttribute( 'amount', $request );
+
+                }
+
+                if( $this->canListPaymentsRequests and $this->canDeletePaymentsRequests ){
+
+                    $requestId = intval( $request->_id );
+
+                    self::$client->delete( '/profile/payments/requests/' . $requestId );
+
+                }
+
+            }
+            else
+                $this->console->writeln( PHP_EOL . "(w) Not enough cashback available for testing payment requests. Tests bypassed.");
 
         }
 
