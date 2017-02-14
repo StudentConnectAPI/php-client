@@ -2,7 +2,7 @@
 /**
  * StudentConnect API Client - Client Class
  * @author adrian7 (adrian@studentmoneysaver.co.uk)
- * @version 1.0
+ * @version 1.5
  */
 
 namespace StudentConnect\API\Client;
@@ -10,7 +10,7 @@ namespace StudentConnect\API\Client;
 use Monolog\Logger;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Client as HTTPClient;
 use StudentConnect\API\Client\Auth\HMAC\Headers;
 use \StudentConnect\API\Client\Auth\HMAC\Settings;
@@ -25,7 +25,7 @@ use StudentConnect\API\Client\Exceptions\ServiceUnavailableException;
 
 class Client{
 
-    const VERSION = '0.8';
+    const VERSION = '0.9';
 
     const GET     = 'GET';
     const POST    = 'POST';
@@ -44,6 +44,8 @@ class Client{
     protected $headers = [
         'User-Agent'        => ( 'StudentConnect API Client v' . self::VERSION ),
         'Accept'            => 'application/json; charset=UTF-8',
+        'X-Client-Version'  => self::VERSION,
+        'X-Client-Platform' => ( PHP_OS . '/' . PHP_SAPI . ' PHP ' . PHP_VERSION )
     ];
 
     /**
@@ -107,6 +109,27 @@ class Client{
     }
 
     /**
+     * Push request logger down the handler stack
+     * @param Logger $logger
+     * @param HandlerStack $stack
+     * @param MessageFormatter|NULL $formatter
+     */
+    protected function pushRequestLogger(Logger $logger,  HandlerStack $stack, MessageFormatter $formatter=NULL){
+
+        if( $logger ){
+
+            $formatter = empty($formatter) ? new MessageFormatter(MessageFormatter::DEBUG) : $formatter;
+            $tap       = \GuzzleHttp\Middleware::log($logger, $formatter);
+
+            $stack->push( $tap );
+
+        }
+        else
+            throw new \InvalidArgumentException("No logger specified... .");
+
+    }
+
+    /**
      * Generates full URI for an api resource
      * @param $resource
      * @param array $params
@@ -161,30 +184,6 @@ class Client{
             //init stack
             $stack = HandlerStack::create();
 
-            //add debug middleware stack
-            if( $logger = $this->cfg->getLogger() ){
-
-                $tap = \GuzzleHttp\Middleware::tap(function (Request $request) use ($logger){
-
-                    $line   = $request->getMethod() . $request->getRequestTarget();
-
-                    $method = $request->getMethod();
-                    $target = $request->getRequestTarget();
-                    $headers= $request->getHeaders();
-                    $body   = $request->getBody()->__toString();
-
-                    $logger->log(Logger::DEBUG, "Sending {$method} request to {$target} ...");
-
-                    $logger->log(Logger::DEBUG, "{$line}");
-                    $logger->log(Logger::DEBUG, print_r($headers, 1));
-                    $logger->log(Logger::DEBUG, $body);
-
-                });
-
-                $stack->push( $tap );
-
-            }
-
             if ( $this->token ){
 
                 //setup to send the token with each request
@@ -202,6 +201,10 @@ class Client{
                 $stack->push($middleware);
 
             }
+
+            //enable debug
+            if( $logger = $this->cfg->getLogger() )
+                $this->pushRequestLogger($logger, $stack);
 
             //create the client
             $this->HTTPClient = new HTTPClient([

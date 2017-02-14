@@ -114,19 +114,50 @@ function init_client(){
 
     if ( ! $Client and API_ENDPOINT ){
 
+        //configure logger
+        $output     = "%message%\n";
+        $formatter = new \Monolog\Formatter\LineFormatter($output, NULL, TRUE);
+
+        $file= ( __DIR__ . '/../../logs/quickstart-' . date('Ymd') . '.log' );
+        $log = new \Monolog\Logger('file');
+
+        $handler   = new \Monolog\Handler\StreamHandler($file, \Monolog\Logger::DEBUG);
+
+        $handler->setFormatter($formatter);
+        $log->pushHandler($handler);
+
         //initialize the client
         try{
 
             if( $token = getOption('api_token') ){
-                $Client = new \StudentConnect\API\Client\Client(API_ENDPOINT);
-                $Client->setToken($token);
+
+                //prepare config wihth logger attached
+                $cfg = new \StudentConnect\API\Client\Configuration(API_ENDPOINT);
+
+                $cfg->setLogger($log);
+
+                $Client = new \StudentConnect\API\Client\Client();
+
+                $Client->configure($cfg);
+                $Client->setToken( \StudentConnect\API\Client\Token::createFromString( $token ) );
 
                 if( $Client->getCurrentProfile() )
                     setOption('verified', TRUE);
+
             }
             else{
 
-                return $Client = new \StudentConnect\API\Client\Client(API_ENDPOINT, APP_KEY, APP_SECRET);
+                //prepare config wihth logger attached
+                $cfg = new \StudentConnect\API\Client\Configuration(API_ENDPOINT, APP_KEY, APP_SECRET);
+
+                $cfg->setLogger($log);
+
+                $Client = new \StudentConnect\API\Client\Client();
+
+                $Client->configure($cfg);
+
+                return $Client;
+
                 //could not initialize the client with current credentials
                 dropOptions();
 

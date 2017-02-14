@@ -1,7 +1,5 @@
 /vendor
 /composer.lock
-/public
-/logs
 /.endpoints
 .env
 tests/_output/*
