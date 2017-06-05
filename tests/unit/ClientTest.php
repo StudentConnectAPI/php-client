@@ -222,8 +222,10 @@ class ClientTest extends Codeception\TestCase\Test{
 
                 if( $this->canCreatePaymentRequests ){
 
+                    $paymentRequestAmount = ( $amounts->available > 10 ) ? Settings::paymentRequestAmount : ( $amounts->available -1 );
+
                     $request = self::$client->post('/profile/payments/requests', [
-                        'amount' => ( $amounts->available -1 )
+                        'amount' => $paymentRequestAmount
                     ]);
 
                     $this->assertTrue( is_object($request) );
@@ -232,7 +234,7 @@ class ClientTest extends Codeception\TestCase\Test{
                     $this->assertObjectHasAttribute( 'user_id', $request );
                     $this->assertObjectHasAttribute( 'amount', $request );
 
-                    $this->assertTrue(( Settings::paymentRequestAmount == $request->amount ), "Payment request created with wrong amount!");
+                    $this->assertTrue(( $paymentRequestAmount == $request->amount ), "Payment request created with wrong amount!");
 
                 }
 
