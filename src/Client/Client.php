@@ -25,7 +25,7 @@ use StudentConnect\API\Client\Exceptions\ServiceUnavailableException;
 
 class Client{
 
-    const VERSION = '0.9';
+    const VERSION = '1.0';
 
     const GET     = 'GET';
     const POST    = 'POST';
@@ -506,7 +506,7 @@ class Client{
      * @param bool $forward
      * @param bool $with_token
      *
-     * @return null
+     * @return null|string
      * @throws ClientException
      */
     public function generateSignInURI($forward=FALSE, $with_token=FALSE){

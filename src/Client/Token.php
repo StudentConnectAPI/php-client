@@ -10,14 +10,21 @@ namespace StudentConnect\API\Client;
 use StudentConnect\API\Client\Auth\HMAC\Settings;
 use StudentConnect\API\Client\Exceptions\TokenException;
 
-class Token{
+class Token implements \Serializable, \JsonSerializable {
 
     private $value  = NULL;
     private $expiry = NULL;
 
     private $expired = FALSE;
 
-    public function __construct(\stdClass $obj ) {
+    /**
+     * Token constructor.
+     *
+     * @param \stdClass $obj
+     *
+     * @throws TokenException
+     */
+    public function __construct( \stdClass $obj ) {
 
         $data = $obj->data;
 
@@ -34,6 +41,10 @@ class Token{
 
     }
 
+    /**
+     * Get token value
+     * @return null|string
+     */
     public function getValue(){
         return $this->value;
     }
@@ -54,7 +65,7 @@ class Token{
     }
 
     /**
-     * checks if the token is expired
+     * Checks if the token is expired
      * @return bool
      */
     public function isExpired(){
@@ -64,9 +75,11 @@ class Token{
         $now = new \DateTime('now', $tz);
         $then= new \DateTime('now', $tz);
 
+        //expiry date
         $then->setTimestamp($this->expiry);
 
         return ( $now >= $then );
+
     }
 
     /**
@@ -79,6 +92,7 @@ class Token{
 
 
     /**
+     * Get token value
      * @return string
      */
     public function __toString() {
@@ -87,11 +101,11 @@ class Token{
 
     /**
      * Creates a new token object from a string
-     * @param $string
+     * @param $value
      * @param $ttl
      * @return self
      */
-    public static function createFromString($string, $ttl=1800){
+    public static function createFromString($value, $ttl=1800){
 
         $obj = new \stdClass();
         $data= new \stdClass();
@@ -101,13 +115,50 @@ class Token{
 
         $now->setTimestamp( $now->getTimestamp() + $ttl );
 
-        $data->token         = strval($string);
+        $data->token         = strval($value);
         $data->expires_at    = $now->getTimestamp();
 
         $obj->data = $data;
 
         return new self($obj);
 
+    }
+
+    /**
+     * @return string
+     */
+    public function serialize() {
+        return serialize([
+            'value'     =>  $this->value,
+            'expiry'    =>  $this->getExpiry()
+        ]);
+    }
+
+    /**
+     * @param string $serialized
+     */
+    public function unserialize( $serialized ) {
+
+        $data = unserialize($serialized);
+
+        if( ! is_array($data) and ! isset($data['value']) and ! isset($data['expiry']) )
+            throw new \InvalidArgumentException("Input missing required fields or not an array.");
+
+        $this->value    = strval($data['value']);
+        $this->expiry   = intval($data['expiry']);
+        $this->expired  = $this->isExpired();
+
+    }
+
+    /**
+     * @return string
+     */
+    public function jsonSerialize() {
+        return json_encode([
+            'value'     =>  $this->value,
+            'expiry'    =>  $this->getExpiry(),
+            'expired'   =>  $this->expired
+        ], JSON_FORCE_OBJECT);
     }
 
 }
