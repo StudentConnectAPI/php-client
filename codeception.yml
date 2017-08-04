@@ -19,7 +19,7 @@ extensions:
             port: 8087
             autostart: true
             documentRoot: tests/_data/localhost
-            startDelay: 1
+            startDelay: 0
 modules:
     config:
         Db:

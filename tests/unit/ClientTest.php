@@ -57,6 +57,34 @@ class ClientTest extends Codeception\TestCase\Test{
 
     }
 
+    /**
+     * Test if the codeception server is running
+     */
+    public function testABuiltinServerIsRunning(){
+
+        $api_endpoint = getenv('API_ENDPOINT');
+        $status_url   = ( trim($api_endpoint, '/') . '/status' );
+        $alive        = TRUE;
+
+        //check php built-in server is running
+        try{
+            $client = new \GuzzleHttp\Client();
+            $client->get( $status_url );
+
+            $this->console->writeln("\n - PHPBuiltinServer is running...");
+
+        }
+        catch (\GuzzleHttp\Exception\ClientException $ce){
+            $alive = FALSE;
+        }
+        catch (\GuzzleHttp\Exception\RequestException $re){
+            $alive = FALSE;
+        }
+
+        $this->assertTrue($alive, "Could not connect to server at {$api_endpoint} ...");
+
+    }
+
     public function testAuthorization(){
 
         static::$client->authorize();

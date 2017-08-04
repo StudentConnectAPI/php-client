@@ -19,6 +19,10 @@ if( in_array($method, ['POST', 'PATCH']) )
 //return response depending on path
 switch ($path){
 
+    case ( 'status' ) : {
+        __successResponse([], [], "Server is running");
+    }; break;
+
     //authorize
     case 'authorize': {
 

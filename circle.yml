@@ -4,10 +4,12 @@ machine:
 
 dependencies:
   pre:
+    - rm /opt/circleci/php/$(phpenv global)/etc/conf.d/xdebug.ini
     - echo "date.timezone = UTC" > /opt/circleci/php/$(phpenv global)/etc/conf.d/timezone.ini
 
 test:
   override:
+    - php vendor/bin/codecept build
     - php vendor/bin/codecept run
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/codeception/
