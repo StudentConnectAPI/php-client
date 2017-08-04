@@ -300,6 +300,16 @@ class Client{
 
     }
 
+    /**
+     * Get response as object
+     * @param $resource
+     * @param string $method
+     * @param array $data
+     *
+     * @return mixed
+     * @throws ClientException
+     * @throws ServiceUnavailableException
+     */
     protected function asObj($resource, $method=self::GET, $data=[]){
 
         $json = $this->asRaw($resource, $method, $data);
@@ -335,6 +345,14 @@ class Client{
 
     }
 
+    /**
+     * Get raw response
+     * @param $resource
+     * @param string $method
+     * @param array $data
+     *
+     * @return string
+     */
     protected function asRaw($resource, $method=self::GET, $data=[]){
 
         $this->rawResponse = $this->query($resource, $data, $method)->getBody()->__toString();
